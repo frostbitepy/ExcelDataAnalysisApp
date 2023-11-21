@@ -1,0 +1,7 @@
+# Enviroment folder
+venv/
+
+# Excel files
+*.xlsx
+*.xls
+*.csv
