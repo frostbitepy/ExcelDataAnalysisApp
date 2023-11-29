@@ -47,7 +47,6 @@ def eliminar_filas_condicionales(df):
 def vincular_etiquetas(df, columnas_codigo_etiqueta):
     """
     Vincula códigos con sus etiquetas en un DataFrame.
-
     Parámetros:
     - df: DataFrame original.
     - columnas_codigo_etiqueta: Lista de pares de columnas (código, etiqueta) a vincular.
@@ -94,3 +93,68 @@ def data_exploration(df):
 # Example of usage:
 # data_exploration(your_dataframe)
 
+
+def eliminar_filas_por_valor(df, columna, valor_a_eliminar):
+    """
+    Elimina las filas del DataFrame donde la columna tiene el valor especificado.
+
+    Parameters:
+    - df: DataFrame
+    - columna: str, nombre de la columna en la que buscar
+    - valor_a_eliminar: str o list, valor o lista de valores a eliminar
+
+    Returns:
+    - DataFrame modificado
+    """
+    if isinstance(valor_a_eliminar, str):
+        # Si valor_a_eliminar es un solo valor, conviértelo a una lista
+        valor_a_eliminar = [valor_a_eliminar]
+
+    # Filtra el DataFrame para mantener solo las filas donde la columna no contiene los valores especificados
+    df_filtrado = df[~df[columna].isin(valor_a_eliminar)]
+
+    return df_filtrado
+
+# Ejemplo de uso:
+# Supongamos que df es tu DataFrame
+# Reemplaza 'Nombre Tipo Póliza_etiqueta' con el nombre real de la columna
+# y 'Anulacion' con el valor que deseas eliminar
+# df = eliminar_filas_por_valor(df, 'Nombre Tipo Póliza_etiqueta', 'Anulacion')
+
+# Crear una función que reciba un dataframe, una columna y devuelva los valores unicos de la columna en una lista
+def unique_values(df, column):
+    unique_values = df[column].unique().tolist()
+    return unique_values
+
+# Crear una funcion que reciba un dataframe, una columna y una lista de valores, 
+# devuelve el dataframe luego de haber elimiado las filas que no contengan los valores de la lista en la columna especificada
+def filter_values(df, column, values):
+    df_filtered = df[df[column].isin(values)]
+    return df_filtered
+
+
+def suma_columna(dataframe, nombre_columna):
+    # Verificar si la columna existe en el dataframe
+    if nombre_columna not in dataframe.columns:
+        return f"La columna '{nombre_columna}' no existe en el dataframe."
+
+    # Calcular la suma de los valores en la columna
+    suma = dataframe[nombre_columna].sum()
+    return suma
+
+# Ejemplo de uso
+# Supongamos que tienes un dataframe llamado 'mi_dataframe' y una columna 'mi_columna'
+# Puedes llamar a la función de la siguiente manera:
+# resultado = suma_columna(mi_dataframe, 'mi_columna')
+# print(resultado)
+
+# Funcion que recibe dos parametros, un dataframe y el nombre de una columna, eliminar los valores null de esa columna
+def eliminar_nulls(dataframe, nombre_columna):
+    # Verificar si la columna existe en el dataframe
+    if nombre_columna not in dataframe.columns:
+        return f"La columna '{nombre_columna}' no existe en el dataframe."
+
+    # Eliminar los valores null, NaN y 0 de la columna
+    dataframe = dataframe[dataframe[nombre_columna].notnull()]
+    dataframe = dataframe[dataframe[nombre_columna] != 0]
+    return dataframe
