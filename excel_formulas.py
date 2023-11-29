@@ -1,64 +1,33 @@
-def devengado(V5, W5, AA1, AA2):
-    if W5 < AA1 or V5 > AA2:
-        return 0
-    elif V5 <= AA1 and W5 <= AA2:
-        return W5 - AA1
-    elif V5 > AA1 and W5 <= AA2:
-        return W5 - V5
-    elif V5 > AA1 and W5 > AA2:
-        return AA2 - V5
-    elif V5 < AA1 and W5 > AA2:
-        return AA2 - AA1
-    else:
-        return None  # Manejar cualquier otro caso según sea necesario
-
-# Ejemplo de uso:
-V5_valor = 10  # Reemplazar con el valor real de V5
-W5_valor = 15  # Reemplazar con el valor real de W5
-AA1_valor = 5  # Reemplazar con el valor real de AA1
-AA2_valor = 20  # Reemplazar con el valor real de AA2
-
-resultado = devengado(V5_valor, W5_valor, AA1_valor, AA2_valor)
-print(resultado)
+from datetime import datetime, timedelta
+import numpy as np
+import pandas as pd
 
 
 def rrc_unidad(y_valor, z_valor):
-    if y_valor > 0:
-        return z_valor / y_valor
+    if pd.notnull(y_valor) and y_valor > pd.Timedelta(0):
+        return z_valor / y_valor.days  # Convert timedelta to days
     else:
-        return None  # Otra opción podría ser devolver un valor predeterminado en lugar de None
-
-# Ejemplo de uso:
-y_valor = 5  # Reemplazar con el valor real de Y5
-z_valor = 20  # Reemplazar con el valor real de Z5
-
-resultado = rrc_unidad(y_valor, z_valor)
-print(resultado)
+        return None  # or return a default value
 
 
 def reserva_de_riesgo_en_curso(y_valor, aa_valor, x_valor):
-    if y_valor > 0:
-        return aa_valor * x_valor
-    else:
-        return None  # Puedes ajustar esto para devolver un valor predeterminado si lo prefieres
-
-# Ejemplo de uso:
-y_valor = 5  # Reemplazar con el valor real de Y6
-aa_valor = 10  # Reemplazar con el valor real de AA6
-x_valor = 3  # Reemplazar con el valor real de X6
-
-resultado = reserva_de_riesgo_en_curso(y_valor, aa_valor, x_valor)
-print(resultado)
+    return np.where(y_valor > 0, aa_valor * x_valor, np.nan)
 
 
-from datetime import datetime, timedelta
+def calcular_devengamiento(fecha_desde, fecha_hasta, inicio_corte, fin_corte):
+    # Convertir las fechas a objetos datetime si no son cadenas
+    if not isinstance(fecha_desde, str):
+        fecha_desde = str(fecha_desde)
+    if not isinstance(fecha_hasta, str):
+        fecha_hasta = str(fecha_hasta)
 
-def mi_funcion_devengamiento(fecha_desde, fecha_hasta, inicio_corte, fin_corte):
-    fecha_desde = datetime.strptime(fecha_desde, "%Y-%m-%d")
-    fecha_hasta = datetime.strptime(fecha_hasta, "%Y-%m-%d")
+    # Extraer solo la parte de la fecha (sin la parte del tiempo)
+    fecha_desde = datetime.strptime(fecha_desde[:10], "%Y-%m-%d")
+    fecha_hasta = datetime.strptime(fecha_hasta[:10], "%Y-%m-%d")
     inicio_corte = datetime.strptime(inicio_corte, "%Y-%m-%d")
     fin_corte = datetime.strptime(fin_corte, "%Y-%m-%d")
 
+    # Verificar las condiciones y calcular el devengado en días
     if fecha_hasta < inicio_corte or fecha_desde > fin_corte:
         return 0
     elif fecha_desde <= inicio_corte and fecha_hasta <= fin_corte:
@@ -70,11 +39,42 @@ def mi_funcion_devengamiento(fecha_desde, fecha_hasta, inicio_corte, fin_corte):
     elif fecha_desde < inicio_corte and fecha_hasta > fin_corte:
         return (fin_corte - inicio_corte).days
 
-# Ejemplo de uso
-fecha_desde = "2023-01-01"
-fecha_hasta = "2023-06-30"
-inicio_corte = "2023-03-01"
-fin_corte = "2023-09-01"
 
-resultado = mi_funcion_devengamiento(fecha_desde, fecha_hasta, inicio_corte, fin_corte)
-print(resultado)
+
+# Crear una funcion que reciba un dataframe, dos columnas y cree una nueva columna al final con la diferencia del valor de las dos columnas,
+# la columna nueva debe llamars "Plazo"
+def calcular_plazo(dataframe, columna1, columna2):
+    dataframe["Plazo"] = dataframe[columna1] - dataframe[columna2]
+    return dataframe
+
+
+# Crear una función que reciba un dataframe, dos columnas, fecha inicio corte, fecha fin corte
+# y cree una nueva columna al final llamada "Devengado" con el valor del devengado aplicando la función calcular_devengamiento
+def generar_devengado(dataframe, columna1, columna2, fecha_inicio_corte, fecha_fin_corte):
+    # Verificar si las columnas existen en el dataframe
+    if columna1 not in dataframe.columns or columna2 not in dataframe.columns:
+        print(f"Las columnas {columna1} y/o {columna2} no están presentes en el DataFrame.")
+        return None
+
+    # Aplicar la función calcular_devengamiento a cada par de valores de las columnas
+    devengado_values = np.vectorize(
+        lambda x, y: calcular_devengamiento(x, y, fecha_inicio_corte, fecha_fin_corte)
+    )(dataframe[columna1], dataframe[columna2])
+
+    # Crear un nuevo DataFrame con la columna "Devengado"
+    nuevo_dataframe = pd.concat([dataframe, pd.DataFrame({"Devengado": devengado_values})], axis=1)
+
+    return nuevo_dataframe
+
+
+# Crear una funcion que reciba un df y dos columnas y cree una nueva columna al final llamada "RRC Unidad" con el valor del RRC Unidad
+# aplicando la funcion rrc_unidad
+def generar_rrc_unidad(dataframe, columna1, columna2):
+    dataframe["RRC Unidad"] = dataframe.apply(lambda row: rrc_unidad(row[columna1], row[columna2]), axis=1)
+    return dataframe 
+
+
+# Crear una funcion que reciba un df y tres columnas, y genere una nueva columna llamad RRC aplicando la funcion reserva_de_riesgo_en_curso
+def generar_rrc(dataframe, columna1, columna2, columna3):
+    dataframe["RRC"] = dataframe.apply(lambda row: reserva_de_riesgo_en_curso(row[columna1], row[columna2], row[columna3]), axis=1)
+    return dataframe
