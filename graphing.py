@@ -2,6 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.ticker import FuncFormatter
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+
 
 def claim_frequency_analysis(df):
     # Convert 'F/Emisión' to datetime if it's not already in datetime format
@@ -78,8 +81,6 @@ def claim_severity_analysis_histogram(df):
     # Example of usage:
     # claim_severity_analysis_histogram(your_dataframe)
 
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
 
 def customer_segmentation(df):
     # Select relevant features for segmentation

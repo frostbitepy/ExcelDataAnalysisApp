@@ -6,4 +6,5 @@ venv/
 *.xls
 *.csv
 
+# Cache
 __pycache__/
