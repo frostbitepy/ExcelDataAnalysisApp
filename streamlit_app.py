@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
+from produccion_handler import procesar_produccion
+from siniestros_handler import procesar_siniestros
+
 
 def read_excel(file):
     df = pd.read_excel(file, engine='openpyxl', dtype=str)
@@ -28,36 +32,78 @@ def display_chart(df, filters, chart_type):
         st.scatter_chart(filtered_df[[column_name, 'Stro. Auto Cobertura Básica 1']])
 
 def main():
-    st.title("Excel Data Analysis App")
+    st.title("Informes por ejercicio")
 
-    # Upload Excel file
-    uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx"])
+    fecha_inicio_corte = st.date_input("Fecha de Inicio Corte", value=pd.to_datetime('today'))
+    fecha_fin_corte = st.date_input("Fecha de Fin Corte", value=pd.to_datetime('today'))
 
-    if uploaded_file:
+    # Upload Produccion Excel file
+    uploaded_produccion_file = st.file_uploader("Cargar planilla de producción", type=["xlsx"])
+
+    # Initialize variable to track if both files are uploaded
+    both_files_uploaded = False 
+
+    if uploaded_produccion_file:
         # Show loading spinner
         with st.spinner("Loading data..."):
-            df = read_excel(uploaded_file)
+            produccion_df = read_excel(uploaded_produccion_file)
 
         # Display first few rows of the DataFrame
         st.success("Data loaded successfully!")
-        st.dataframe(df.head())
-        # Filters
-        st.header("Filters")
-        filters = {}
-        for col in df.columns:
-            filters[col] = st.text_input(f"Enter value for {col} (leave blank for all):", "")
+        # st.dataframe(produccion_df.head())
 
-        # Show total sum
-        total_sum = df['Stro. Auto Cobertura Básica 1'].astype(float).sum()
-        st.write(f"Total Sum of 'Stro. Auto Cobertura Básica 1': {total_sum}")
+    # Upload Siniestros Excel file
+    uploaded_siniestro_file = st.file_uploader("Cargar planilla de siniestro", type=["xlsx"])
 
-        # Chart Type
-        chart_type = st.selectbox("Select the type of chart:", ["Line Chart", "Bar Chart", "Scatter Chart"])
+    if uploaded_siniestro_file:
+        # Show loading spinner
+        with st.spinner("Loading data..."):
+            siniestro_df = read_excel(uploaded_siniestro_file)
 
-        # Action button to display chart
-        if st.button("Display Chart"):
-            st.header("Chart")
-            display_chart(df, filters, chart_type)
+        # Display first few rows of the DataFrame
+        st.success("Data loaded successfully!")
+        # st.dataframe(siniestro_df.head()) 
+
+        # Set flag to True since both files are uploaded
+        both_files_uploaded = True
+
+    # Check if both files are uploaded before proceeding
+    if both_files_uploaded:
+        
+        produccion_results = procesar_produccion(produccion_df, fecha_inicio_corte, fecha_fin_corte)
+        siniestros_results = procesar_siniestros(siniestro_df, fecha_inicio_corte, fecha_fin_corte)
+    
+        # Variables iniciales
+        produccion = produccion_results['sumatoria_prima_articulo']
+        produccion_sin_servicio = produccion_results['sumatoria_prima_articulo_sin_servicio']
+        siniestros = siniestros_results['sumatoria_siniestros']
+        titulo_opciones = ["Prima técnica por artículo", "Prima por artículo"]
+        selected_titulo = st.selectbox("Selecciona el tipo de prima", titulo_opciones)
+
+        # Actualizar valor según el título seleccionado
+        if selected_titulo == "Prima técnica por artículo":
+            valor_produccion = produccion_sin_servicio
+        elif selected_titulo == "Prima por artículo":
+            valor_produccion = produccion
+
+        # Calcular el porcentaje de siniestros/valor_produccion
+        porcentaje_siniestros = (siniestros / valor_produccion) * 100
+        porcentaje_siniestros = str(porcentaje_siniestros) + "%"
+
+        # Crear datos para la tabla
+        data = {
+            "Prima devengada": [valor_produccion],
+            "Valor": [siniestros],
+            "Proporción Siniestros/Produccion": [porcentaje_siniestros]
+        }
+
+        # Crear DataFrame
+        df = pd.DataFrame(data)
+
+        # Mostrar la tabla
+        st.table(df)
+
+    
 
 if __name__ == "__main__":
     main()
