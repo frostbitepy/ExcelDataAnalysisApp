@@ -65,34 +65,6 @@ def vincular_etiquetas(df, columnas_codigo_etiqueta):
 
     return df_modificado
 
-def data_exploration(df):
-    # Display basic statistics of the numerical columns
-    print("Basic Statistics:")
-    print(df.describe())
-
-    # Display the distribution of the 'Siniestro' column
-    plt.figure(figsize=(8, 6))
-    sns.countplot(x='Siniestro', data=df)
-    plt.title('Distribution of Claims')
-    plt.xlabel('Claim Status')
-    plt.ylabel('Count')
-    plt.show()
-
-    # Display correlations between numerical features
-    plt.figure(figsize=(12, 10))
-    correlation_matrix = df.corr()
-    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5)
-    plt.title('Correlation Matrix')
-    plt.show()
-
-    # Display pair plots to visualize relationships between numerical features
-    sns.pairplot(df, hue='Siniestro', palette='Set1')
-    plt.suptitle('Pair Plot of Numerical Features by Claim Status', y=1.02)
-    plt.show()
-
-# Example of usage:
-# data_exploration(your_dataframe)
-
 
 def eliminar_filas_por_valor(df, columna, valor_a_eliminar):
     """

@@ -8,7 +8,7 @@ def rrc_unidad(plazo, devengado):
         return plazo / devengado.days  # Convert timedelta to days
     else:
         return None  # or return a default value
-    
+   
     
 def generar_rrc_unidad(row):
     devengado = pd.to_timedelta(row['Devengado'])

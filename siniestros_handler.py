@@ -30,6 +30,6 @@ def procesar_siniestros(siniestros_df):
     sumatoria_siniestros = suma_columna(df, 'Stro. Auto Cobertura Básica 1')
 
     # Sumar las filas del dataframe
-    sumatoria_filas = df.sum(axis=0)
+    sumatoria_filas = len(df)
     
     return {'sumatoria_siniestros': sumatoria_siniestros, 'sumatoria_filas': sumatoria_filas, 'df': df}
