@@ -15,19 +15,19 @@ template_file_path = 'ProduccionAutomovil2022-edited.xlsx'
 df_template = pd.read_excel(template_file_path)
 
 # Listado de productos a utilizar
-valid_products = ['AUTOMOVIL- ALTA GAMA','PLAN ACCIONISTAS','REGIONAL','REGIONAL - ITAIPU / CONMEBOL','REGIONAL 0KM','REGIONAL MAX','REGIONAL PLUS','REGIONAL SUPERIOR']
+valid_products = ['AUTOMOVIL- ALTA GAMA','FUNCIONARIOS BANCO REGIONAL','PLAN ACCIONISTAS','REGIONAL','REGIONAL - LIDER','REGIONAL - ITAIPU / CONMEBOL','REGIONAL 0KM','REGIONAL MAX','REGIONAL PLUS','REGIONAL SUPERIOR']
 
 
 def procesar_produccion(produccion_df, inicio_corte, fin_corte):
     
     # Remove columns that are not needed
-    df = remove_columns(produccion_df, df_template)
-
-    # Utilizar solo los productos validos
-    df = filter_values(produccion_df, 'Nombre Producto', valid_products)
+    # df = remove_columns(produccion_df, df_template)
 
     # Elininar filas de anulaciones
     df = eliminar_filas_por_valor(produccion_df, 'Nombre Tipo Póliza', 'Anulacion')
+
+    # Utilizar solo los productos validos
+    df = filter_values(df, 'Nombre Producto', valid_products)    
 
     # Convert 'Fec. Hasta Art.' and 'Fec. Desde Art.' to datetime objects if not already
     df['Fec. Hasta Art.'] = pd.to_datetime(df['Fec. Hasta Art.'], errors='coerce')
@@ -37,7 +37,7 @@ def procesar_produccion(produccion_df, inicio_corte, fin_corte):
     df['Plazo'] = (df['Fec. Hasta Art.'] - df['Fec. Desde Art.']).dt.days.astype(float)
 
     # Handle any NaT (Not a Time) values that might result from the conversion
-    df['Plazo'] = df['Plazo'].fillna(0)
+    # df['Plazo'] = df['Plazo'].fillna(0)
 
     # Convert 'inicio_corte' and 'fin_corte' to datetime objects
     inicio_corte = pd.to_datetime(inicio_corte)

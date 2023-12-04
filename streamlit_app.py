@@ -117,7 +117,6 @@ def main():
                 st.table(df_prima)
                 st.table(df_prima_tecnica)
 
-                # Crear un botón en Streamlit llamado "Mostrar gráfico"
 
 if __name__ == "__main__":
     main()
