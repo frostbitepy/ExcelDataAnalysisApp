@@ -16,18 +16,18 @@ df_template = pd.read_excel(template_file_path)
 
 # Listado de productos a utilizar
 valid_products = ['AUTOMOVIL- ALTA GAMA','FUNCIONARIOS BANCO REGIONAL','PLAN ACCIONISTAS','REGIONAL','REGIONAL - LIDER','REGIONAL - ITAIPU / CONMEBOL','REGIONAL 0KM','REGIONAL MAX','REGIONAL PLUS','REGIONAL SUPERIOR']
-
+valid_products_code = [1,9,26,34,51,79,91,105,106]
 
 def procesar_produccion(produccion_df, inicio_corte, fin_corte):
     
     # Remove columns that are not needed
     # df = remove_columns(produccion_df, df_template)
 
-    # Elininar filas de anulaciones
-    df = eliminar_filas_por_valor(produccion_df, 'Nombre Tipo Póliza', 'Anulacion')
-
     # Utilizar solo los productos validos
-    df = filter_values(df, 'Nombre Producto', valid_products)    
+    df = filter_values(produccion_df, 'Producto', valid_products_code)
+
+    # Elininar filas de anulaciones
+    df = eliminar_filas_por_valor(df, 'Nombre Tipo Póliza', 'Anulacion')    
 
     # Convert 'Fec. Hasta Art.' and 'Fec. Desde Art.' to datetime objects if not already
     df['Fec. Hasta Art.'] = pd.to_datetime(df['Fec. Hasta Art.'], errors='coerce')
@@ -48,6 +48,7 @@ def procesar_produccion(produccion_df, inicio_corte, fin_corte):
 
     # Crear columna RRC Unidad
     df.loc[:, 'RRC Unidad'] = np.where(df['Plazo'] > 0, df['Devengado'] / df['Plazo'], 0).copy()
+    # df.loc[:, 'RRC Unidad'] = np.where(df['Plazo'] > 0, round(df['Devengado'] / df['Plazo'], 2), 0).copy() # Redondear a dos decimeles
 
     # Numeric value handler
     df['RRC Unidad'] = pd.to_numeric(df['RRC Unidad'], errors='coerce')
@@ -60,10 +61,12 @@ def procesar_produccion(produccion_df, inicio_corte, fin_corte):
     df['Prima Art.'].fillna(0, inplace=True)
 
     # Create column 'RRC sin servicio'
-    df.loc[:, 'RRC sin servicio'] = np.where((df['Plazo'] > 0) & (df['RRC Unidad'] > 0), df['RRC Unidad'] * df['Prima Técnica Art.'], 0).copy()
+    # df.loc[:, 'RRC sin servicio'] = np.where((df['Plazo'] > 0) & (df['RRC Unidad'] > 0), df['RRC Unidad'] * df['Prima Técnica Art.'], 0).copy()
+    df.loc[:, 'RRC sin servicio'] = np.where((df['Plazo'] > 0) & (df['RRC Unidad'] > 0), round(df['RRC Unidad'] * df['Prima Técnica Art.'], 2), 0).copy() # Redondear a dos decimeles
 
     # Create column 'RRC'
-    df.loc[:, 'RRC'] = np.where((df['Plazo'] > 0) & (df['RRC Unidad'] > 0), df['RRC Unidad'] * df['Prima Art.'], 0).copy()
+    # df.loc[:, 'RRC'] = np.where((df['Plazo'] > 0) & (df['RRC Unidad'] > 0), df['RRC Unidad'] * df['Prima Art.'], 0).copy()
+    df.loc[:, 'RRC'] = np.where((df['Plazo'] > 0) & (df['RRC Unidad'] > 0), round(df['RRC Unidad'] * df['Prima Art.'], 2), 0).copy() # Redondear a dos decimeles
 
     # Sumar la columna RRC
     suma_rrc = suma_columna(df,'RRC')

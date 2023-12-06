@@ -10,6 +10,7 @@ template_file_path = 'SiniestrosAutomovil2022-edited.xlsx'
 
 # Lista de los productos a filtrar
 valid_products = ['AUTOMOVIL- ALTA GAMA','PLAN ACCIONISTAS','REGIONAL','REGIONAL - ITAIPU / CONMEBOL','REGIONAL 0KM','REGIONAL MAX','REGIONAL PLUS','REGIONAL SUPERIOR']
+valid_products_code = [1,9,26,34,51,79,91,105,106]
 
 # Read the excel file
 # df_original = pd.read_excel(file_path)
@@ -18,10 +19,10 @@ df_template = pd.read_excel(template_file_path)
 def procesar_siniestros(siniestros_df):
 
     # Remove columns that are not needed
-    df = remove_columns(siniestros_df, df_template)
+    # df = remove_columns(siniestros_df, df_template)
 
     # Filtrar por los productos de la lista
-    df = filter_values(df, 'Nombre Producto', valid_products)
+    df = filter_values(siniestros_df, 'Producto', valid_products_code)
 
     # Eliminar filas que no son sinietros
     df = eliminar_nulls(df, 'Fec. Stro.')

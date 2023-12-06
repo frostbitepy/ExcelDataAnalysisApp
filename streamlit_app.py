@@ -52,7 +52,7 @@ def main():
     # Upload Produccion Excel file
     uploaded_produccion_file = st.file_uploader("Cargar planilla de producción", type=["xlsx"])
     # Upload Siniestros Excel file
-    uploaded_siniestro_file = st.file_uploader("Cargar planilla de siniestro", type=["xlsx"])
+    uploaded_siniestro_file = st.file_uploader("Cargar planilla de siniestros", type=["xlsx"])
 
     # Initialize variable to track if both files are uploaded
     both_files_uploaded = False 
@@ -79,7 +79,7 @@ def main():
                 # Variables iniciales
                 valor_produccion = produccion_results['suma_rrc']
                 valor_produccion_sin_servicio = produccion_results['suma_rrc_sin_servicio']
-                siniestros = siniestros_results['sumatoria_siniestros']
+                siniestros = siniestros_results['sumatoria_siniestros']             
                 
                 produccion_df = produccion_results['df']
                 siniestro_df = siniestros_results['df']
@@ -93,6 +93,10 @@ def main():
                 porcentaje_siniestros = round((siniestros / valor_produccion) * 100, 2)
                 porcentaje_siniestros = str(porcentaje_siniestros) + "%"
 
+                # Calcular el porcentaje de siniestros/valor_produccion sin servicio
+                porcentaje_siniestros_sin_servicio = round((siniestros / valor_produccion_sin_servicio) * 100, 2)
+                porcentaje_siniestros_sin_servicio = str(porcentaje_siniestros_sin_servicio) + "%"
+
                 # Set the locale to your desired format (e.g., Spanish)
                 locale.setlocale(locale.LC_NUMERIC, 'es_ES.UTF-8')  # Adjust the locale as needed
 
@@ -100,13 +104,13 @@ def main():
                 data_prima = {
                     "Prima devengada": [locale.format('%.2f', valor_produccion, grouping=True)],
                     "Sumatoria Siniestros": [locale.format('%.2f', siniestros, grouping=True)],
-                    "Proporción Siniestros/Produccion": [porcentaje_siniestros]
+                    "Siniestros/Produccion": [porcentaje_siniestros]
                 }
 
                 data_prima_tecnica = {
                     "Prima técnica devengada": [locale.format('%.2f', valor_produccion_sin_servicio, grouping=True)],
                     "Sumatoria Siniestros": [locale.format('%.2f', siniestros, grouping=True)],
-                    "Proporción Siniestros/Produccion": [porcentaje_siniestros]
+                    "Siniestros/Produccion": [porcentaje_siniestros_sin_servicio]
                 }
 
                 # Crear DataFrames
@@ -116,6 +120,20 @@ def main():
                 # Mostrar la tablas
                 st.table(df_prima)
                 st.table(df_prima_tecnica)
+
+                # Columnas a mostrar
+                columns_to_show = ['Prima Técnica Art.','Prima Art.','Fec. Desde Art.','Fec. Hasta Art.','Plazo','Devengado','RRC Unidad','RRC sin servicio','RRC']
+                produccion_df = produccion_df[columns_to_show]
+
+                # Display the count of rows for the "Produccion" DataFrame
+                st.write("Cantidad Produccion:", produccion_df.shape[0])
+
+                # Display the count of rows for the "Siniestros" DataFrame
+                st.write("Cantidad Siniestros:", siniestro_df.shape[0]) 
+
+                # Mostrar dataframe
+                st.dataframe(produccion_df)
+  
 
 
 if __name__ == "__main__":

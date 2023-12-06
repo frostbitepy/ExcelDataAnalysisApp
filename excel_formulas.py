@@ -20,7 +20,7 @@ def reserva_de_riesgo_en_curso(y_valor, aa_valor, x_valor):
 
 
 def generar_devengado(row, inicio_corte, fin_corte):
-    if row['Fec. Hasta Art.'] < fin_corte or row['Fec. Desde Art.'] > fin_corte:
+    if row['Fec. Hasta Art.'] < inicio_corte or row['Fec. Desde Art.'] > fin_corte:
         return 0
     elif row['Fec. Desde Art.'] <= inicio_corte and row['Fec. Hasta Art.'] <= fin_corte:
         return (row['Fec. Hasta Art.'] - inicio_corte).days
@@ -33,6 +33,21 @@ def generar_devengado(row, inicio_corte, fin_corte):
     else:
         return 0
 
+"""
+def generar_devengado_aux(row, inicio_corte, fin_corte):
+    if row['Fec. Hasta Art.'] < inicio_corte or row['Fec. Desde Art.'] > fin_corte:
+        return 0
+    elif (row['Fec. Desde Art.'] <= inicio_corte and row['Fec. Hasta Art.'] <= fin_corte):
+        return max(0, row['Fec. Hasta Art.'] - inicio_corte)
+    elif (row['Fec. Desde Art.'] > inicio_corte and row['Fec. Hasta Art.'] <= fin_corte):
+        return row['Fec. Hasta Art.'] - row['Fec. Desde Art.']
+    elif (row['Fec. Desde Art.'] > inicio_corte and row['Fec. Hasta Art.'] > fin_corte):
+        return min(fin_corte - row['Fec. Desde Art.'], fin_corte - inicio_corte)
+    elif (row['Fec. Desde Art.'] < inicio_corte and row['Fec. Hasta Art.'] > fin_corte):
+        return fin_corte - inicio_corte
+    else:
+        return 0
+"""
 
 
 # Crear una funcion que reciba un dataframe, dos columnas y cree una nueva columna al final con la diferencia del valor de las dos columnas,
