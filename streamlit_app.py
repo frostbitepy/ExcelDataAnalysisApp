@@ -33,11 +33,30 @@ def display_chart(df, filters, chart_type):
         st.scatter_chart(filtered_df[[column_name, 'Stro. Auto Cobertura Básica 1']])
 
 def main():
+
+    # Sidebar elements
+    st.sidebar.write("Filtros")
+
+    # Using object notation
+    add_selectbox = st.sidebar.multiselect(
+        'Selecciona los productos a incluir en el informe:',
+        ['AUTOMOVIL- ALTA GAMA','FUNCIONARIOS BANCO REGIONAL','PLAN ACCIONISTAS','REGIONAL',
+        'REGIONAL - LIDER','REGIONAL - ITAIPU / CONMEBOL','REGIONAL 0KM','REGIONAL MAX',
+        'REGIONAL PLUS','REGIONAL SUPERIOR']
+        )
+    
+    
+    st.sidebar.write('You selected:', add_selectbox)
+
+    # Center elements
     st.title("Informes por ejercicio")
 
     fecha_inicio_corte = st.date_input("Fecha de Inicio Corte", value=pd.to_datetime('today'))
     fecha_fin_corte = st.date_input("Fecha de Fin Corte", value=pd.to_datetime('today'))
 
+    
+
+    
 
     @st.cache_data
     def cargar_datos(uploaded_file):
