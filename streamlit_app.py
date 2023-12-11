@@ -7,30 +7,45 @@ from produccion_handler import procesar_produccion
 from siniestros_handler import procesar_siniestros
 
 
-def read_excel(file):
-    df = pd.read_excel(file, engine='openpyxl', dtype=str)
-    return df
+products_dict = {
+    'ACOPLADO O CARRETA PLUS': 30,
+    'ACOPLADO O CARRETA SUPERIOR 2': 37,
+    'ACOPLADO O CARRETA- GS': 17,
+    'CAMIONES - SUPERIOR 1': 13,
+    'CAMIONES GS': 8,
+    'CAMIONES PLUS': 29,
+    'CAMIONES SUPERIOR 2': 35,
+    'CHILE - REG- GS': 50,
+    'FUNCIONARIOS BANCO REGIONAL': 106,
+    'GS -REGIONAL 0KM': 91,
+    'GS REGIONAL- ALTA GAMA': 51,
+    'GS- RC- AUTOMOVILES': 3,
+    'GS- REGIONAL - SUDAMERIS': 165,
+    'GS-REGIONAL PLUS/MAX': 1,
+    'MOTOS ALTA GAMA REG/SUDAMERIS- GS': 52,
+    'PERDIDA TOTAL - GS': 5,
+    'PERDIDA TOTAL - MOTOCICLETAS': 84,
+    'PLAN ACCIONISTAS': 105,
+    'REGIONAL - GS': 9,
+    'REGIONAL - ITAIPU / CONMEBOL': 85,
+    'REGIONAL - MOTOCICLETAS -GS': 20,
+    'REGIONAL MAX': 26,
+    'REGIONAL SUPERIOR': 34,
+    'REGIONAL- FUN.ORSA': 82,
+    'REGIONAL- KUROSU / SETAC': 83,
+    'RESP. CIVIL AUTOMOVIL - SUPERIOR 2': 33,
+    'RESP. CIVIL AUTOMOVILES - PLUS': 27,
+    'RESP. CIVIL AUTOMOVILES - SUPERIOR 1': 10,
+    'RESP. CIVIL CAMIONES - PLUS': 31,
+    'RESP. CIVIL CAMIONES - SUPERIOR 2': 38,
+    'RESP. CIVIL CARRETA O ACOP. PLUS': 32,
+    'RESP. CIVIL CARRETA O ACOP. SUPERIOR 2': 39,
+    'RESP. CIVIL CARRETA O ACOPLADO GS': 24,
+    'RESPONSABILIDAD CIVIL & CARTA VERDE': 156,
+    'RESPONSABILIDAD CIVIL - MOTOCICLETAS': 21,
+    'REGIONAL SUPERIOR': 34
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 
-def apply_filters(df, filters):
-    # Apply filters based on user input
-    for col, value in filters.items():
-        df = df[df[col] == value]
-    return df
-
-def display_chart(df, filters, chart_type):
-    # Apply filters if any
-    filtered_df = apply_filters(df, filters)
-
-    # Get column for x-axis
-    column_name = st.selectbox("Select the column for the x-axis:", filtered_df.columns)
-
-    # Choose the type of chart
-    if chart_type == "Line Chart":
-        st.line_chart(filtered_df[[column_name, 'Stro. Auto Cobertura Básica 1']])
-    elif chart_type == "Bar Chart":
-        st.bar_chart(filtered_df[[column_name, 'Stro. Auto Cobertura Básica 1']])
-    elif chart_type == "Scatter Chart":
-        st.scatter_chart(filtered_df[[column_name, 'Stro. Auto Cobertura Básica 1']])
 
 def main():
 
@@ -38,24 +53,18 @@ def main():
     st.sidebar.write("Filtros")
 
     # Using object notation
-    add_selectbox = st.sidebar.multiselect(
-        'Selecciona los productos a incluir en el informe:',
-        ['AUTOMOVIL- ALTA GAMA','FUNCIONARIOS BANCO REGIONAL','PLAN ACCIONISTAS','REGIONAL',
-        'REGIONAL - LIDER','REGIONAL - ITAIPU / CONMEBOL','REGIONAL 0KM','REGIONAL MAX',
-        'REGIONAL PLUS','REGIONAL SUPERIOR']
+    valid_products_selection = st.sidebar.multiselect(
+        'Selecciona los productos a incluir en el informe:', products_dict.keys()
         )
     
     
-    st.sidebar.write('You selected:', add_selectbox)
+    st.sidebar.write('You selected:', valid_products_selection)
 
     # Center elements
     st.title("Informes por ejercicio")
 
     fecha_inicio_corte = st.date_input("Fecha de Inicio Corte", value=pd.to_datetime('today'))
     fecha_fin_corte = st.date_input("Fecha de Fin Corte", value=pd.to_datetime('today'))
-
-    
-
     
 
     @st.cache_data
@@ -89,8 +98,8 @@ def main():
     # Check if both files are uploaded before proceeding
     if both_files_uploaded:
         
-        produccion_results = procesar_produccion(produccion_df, fecha_inicio_corte, fecha_fin_corte)  
-        siniestros_results = procesar_siniestros(siniestro_df)
+        produccion_results = procesar_produccion(produccion_df, fecha_inicio_corte, fecha_fin_corte, valid_products_selection)  
+        siniestros_results = procesar_siniestros(siniestro_df, valid_products_selection)
 
         if produccion_results is not None and siniestros_results is not None:
             # Crear un botón en Streamlit llamado "Generar informe"

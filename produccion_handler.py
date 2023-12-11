@@ -8,20 +8,60 @@ from datetime import datetime, timedelta
 
 # Replace 'your_data.xlsx' with the actual path to your Excel file
 # file_path = 'PRODUCCION22-23.xlsx'
-template_file_path = 'ProduccionAutomovil2022-edited.xlsx'
+# template_file_path = 'ProduccionAutomovil2022-edited.xlsx'
 
 # Read the excel file
 # df_original = pd.read_excel(file_path)
-df_template = pd.read_excel(template_file_path)
+# df_template = pd.read_excel(template_file_path)
 
 # Listado de productos a utilizar
-valid_products = ['AUTOMOVIL- ALTA GAMA','FUNCIONARIOS BANCO REGIONAL','PLAN ACCIONISTAS','REGIONAL','REGIONAL - LIDER','REGIONAL - ITAIPU / CONMEBOL','REGIONAL 0KM','REGIONAL MAX','REGIONAL PLUS','REGIONAL SUPERIOR']
-valid_products_code = [1,9,26,34,51,79,91,105,106]
+# valid_products = ['AUTOMOVIL- ALTA GAMA','FUNCIONARIOS BANCO REGIONAL','PLAN ACCIONISTAS','REGIONAL','REGIONAL - LIDER','REGIONAL - ITAIPU / CONMEBOL','REGIONAL 0KM','REGIONAL MAX','REGIONAL PLUS','REGIONAL SUPERIOR']
+# valid_products_code = [1,9,26,34,51,79,91,105,106]
+products_dict = {
+    'ACOPLADO O CARRETA PLUS': 30,
+    'ACOPLADO O CARRETA SUPERIOR 2': 37,
+    'ACOPLADO O CARRETA- GS': 17,
+    'CAMIONES - SUPERIOR 1': 13,
+    'CAMIONES GS': 8,
+    'CAMIONES PLUS': 29,
+    'CAMIONES SUPERIOR 2': 35,
+    'CHILE - REG- GS': 50,
+    'FUNCIONARIOS BANCO REGIONAL': 106,
+    'GS -REGIONAL 0KM': 91,
+    'GS REGIONAL- ALTA GAMA': 51,
+    'GS- RC- AUTOMOVILES': 3,
+    'GS- REGIONAL - SUDAMERIS': 165,
+    'GS-REGIONAL PLUS/MAX': 1,
+    'MOTOS ALTA GAMA REG/SUDAMERIS- GS': 52,
+    'PERDIDA TOTAL - GS': 5,
+    'PERDIDA TOTAL - MOTOCICLETAS': 84,
+    'PLAN ACCIONISTAS': 105,
+    'REGIONAL - GS': 9,
+    'REGIONAL - ITAIPU / CONMEBOL': 85,
+    'REGIONAL - MOTOCICLETAS -GS': 20,
+    'REGIONAL MAX': 26,
+    'REGIONAL SUPERIOR': 34,
+    'REGIONAL- FUN.ORSA': 82,
+    'REGIONAL- KUROSU / SETAC': 83,
+    'RESP. CIVIL AUTOMOVIL - SUPERIOR 2': 33,
+    'RESP. CIVIL AUTOMOVILES - PLUS': 27,
+    'RESP. CIVIL AUTOMOVILES - SUPERIOR 1': 10,
+    'RESP. CIVIL CAMIONES - PLUS': 31,
+    'RESP. CIVIL CAMIONES - SUPERIOR 2': 38,
+    'RESP. CIVIL CARRETA O ACOP. PLUS': 32,
+    'RESP. CIVIL CARRETA O ACOP. SUPERIOR 2': 39,
+    'RESP. CIVIL CARRETA O ACOPLADO GS': 24,
+    'RESPONSABILIDAD CIVIL & CARTA VERDE': 156,
+    'RESPONSABILIDAD CIVIL - MOTOCICLETAS': 21,
+    'REGIONAL SUPERIOR': 34
+}
 
-def procesar_produccion(produccion_df, inicio_corte, fin_corte):
+def procesar_produccion(produccion_df, inicio_corte, fin_corte, valid_products):
     
     # Remove columns that are not needed
     # df = remove_columns(produccion_df, df_template)
+
+    valid_products_code = [products_dict[key] for key in valid_products]
 
     # Utilizar solo los productos validos
     df = filter_values(produccion_df, 'Producto', valid_products_code)
