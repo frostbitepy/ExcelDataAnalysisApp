@@ -68,6 +68,11 @@ def procesar_produccion(produccion_df, inicio_corte, fin_corte, valid_products, 
     # Remove columns that are not needed
     # df = remove_columns(produccion_df, df_template)
 
+    if not valid_products:
+        valid_products = products_dict.keys()
+    else:
+        valid_products = valid_products
+
     valid_products_code = [products_dict[key] for key in valid_products]
     via_importacion_code = [via_importacion_dict[key] for key in via_importacion]
     

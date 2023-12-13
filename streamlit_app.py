@@ -181,7 +181,7 @@ def main():
                 st.table(df_prima_tecnica)
 
                 # Columnas a mostrar
-                columns_to_show = ['Nombre Producto','Via Importación','Prima Art.','Fec. Desde Art.','Fec. Hasta Art.','Plazo','Devengado','RRC Unidad','RRC']
+                columns_to_show = ['Nombre Producto','Via Importación','Prima Art.','Fec. Desde Art.','Fec. Hasta Art.','Plazo','Devengado','RRC']
                 produccion_df = produccion_df[columns_to_show]
 
                 # Display the count of rows for the "Produccion" DataFrame
