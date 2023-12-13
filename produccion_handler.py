@@ -56,15 +56,26 @@ products_dict = {
     'REGIONAL SUPERIOR': 34
 }
 
-def procesar_produccion(produccion_df, inicio_corte, fin_corte, valid_products):
+via_importacion_dict = {
+    'REPRESENTANTE': 1,
+    'VIA CHILE': 2,
+    'OTROS': 3,
+    '': 0
+}
+
+def procesar_produccion(produccion_df, inicio_corte, fin_corte, valid_products, via_importacion):
     
     # Remove columns that are not needed
     # df = remove_columns(produccion_df, df_template)
 
     valid_products_code = [products_dict[key] for key in valid_products]
-
+    via_importacion_code = [via_importacion_dict[key] for key in via_importacion]
+    
     # Utilizar solo los productos validos
     df = filter_values(produccion_df, 'Producto', valid_products_code)
+
+    # Filtrar por via de importacion seleccionada
+    df = filter_values(df, 'Código Via Importación', via_importacion_code)
 
     # Elininar filas de anulaciones
     df = eliminar_filas_por_valor(df, 'Nombre Tipo Póliza', 'Anulacion')    

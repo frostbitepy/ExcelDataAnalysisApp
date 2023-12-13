@@ -50,19 +50,30 @@ products_dict = {
     'REGIONAL SUPERIOR': 34
 } 
 
+via_importacion_dict = {
+    'REPRESENTANTE': 1,
+    'VIA CHILE': 2,
+    'OTROS': 3,
+    '': 0
+}
+
 # Read the excel file
 # df_original = pd.read_excel(file_path)
 # df_template = pd.read_excel(template_file_path, valid_products)
 
-def procesar_siniestros(siniestros_df, valid_products):
+def procesar_siniestros(siniestros_df, valid_products, via_importacion):
 
     # Remove columns that are not needed
     # df = remove_columns(siniestros_df, df_template)
 
     valid_products_code = [products_dict[key] for key in valid_products]
+    via_importacion_code = [via_importacion_dict[key] for key in via_importacion]
 
     # Filtrar por los productos de la lista
     df = filter_values(siniestros_df, 'Producto', valid_products_code)
+
+    # Filtrar por via de importacion seleccionada
+    df = filter_values(df, 'Código Via Importación', via_importacion_code)
 
     # Eliminar filas que no son sinietros
     df = eliminar_nulls(df, 'Fec. Stro.')

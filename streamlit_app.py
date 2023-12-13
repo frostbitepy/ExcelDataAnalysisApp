@@ -46,20 +46,51 @@ products_dict = {
     'REGIONAL SUPERIOR': 34
 }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 
+via_importacion_dict = {
+    'REPRESENTANTE': 1,
+    'VIA CHILE': 2,
+    'OTROS': 3
+}
+
+via_importacion_list = ['REPRESENTANTE','VIA CHILE','OTROS']
+
 
 def main():
 
     # Sidebar elements
-    st.sidebar.write("Filtros")
+    st.sidebar.title("Filtros")
 
+    st.sidebar.subheader("Productos")
     # Using object notation
     valid_products_selection = st.sidebar.multiselect(
         'Selecciona los productos a incluir en el informe:', products_dict.keys()
         )
-    
-    
-    st.sidebar.write('You selected:', valid_products_selection)
+       
+    # st.sidebar.write('You selected:', valid_products_selection)
 
+    # vía importación # CHECK THIS OUT
+    st.sidebar.subheader("Vía Importación")
+    representante = st.sidebar.checkbox('REPRESENTANTE',value=True)
+    via_chile = st.sidebar.checkbox('VIA CHILE',value=True)
+    otros = st.sidebar.checkbox('OTROS',value=True)
+
+    if representante:
+        via_importacion_list[0] = 'REPRESENTANTE'
+    else:
+        via_importacion_list[0] = ''
+    
+    if via_chile:
+        via_importacion_list[1] = 'VIA CHILE'
+    else:
+        via_importacion_list[1] = ''
+    
+    if otros:
+        via_importacion_list[2] = 'OTROS'
+    else:
+        via_importacion_list[2] = ''
+
+
+   
     # Center elements
     st.title("Informes por ejercicio")
 
@@ -98,8 +129,8 @@ def main():
     # Check if both files are uploaded before proceeding
     if both_files_uploaded:
         
-        produccion_results = procesar_produccion(produccion_df, fecha_inicio_corte, fecha_fin_corte, valid_products_selection)  
-        siniestros_results = procesar_siniestros(siniestro_df, valid_products_selection)
+        produccion_results = procesar_produccion(produccion_df, fecha_inicio_corte, fecha_fin_corte, valid_products_selection, via_importacion_list)  
+        siniestros_results = procesar_siniestros(siniestro_df, valid_products_selection, via_importacion_list)
 
         if produccion_results is not None and siniestros_results is not None:
             # Crear un botón en Streamlit llamado "Generar informe"
@@ -150,7 +181,7 @@ def main():
                 st.table(df_prima_tecnica)
 
                 # Columnas a mostrar
-                columns_to_show = ['Prima Técnica Art.','Prima Art.','Fec. Desde Art.','Fec. Hasta Art.','Plazo','Devengado','RRC Unidad','RRC sin servicio','RRC']
+                columns_to_show = ['Nombre Producto','Via Importación','Prima Art.','Fec. Desde Art.','Fec. Hasta Art.','Plazo','Devengado','RRC Unidad','RRC']
                 produccion_df = produccion_df[columns_to_show]
 
                 # Display the count of rows for the "Produccion" DataFrame
