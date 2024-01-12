@@ -18,7 +18,7 @@ def generar_rrc_unidad(row):
 def reserva_de_riesgo_en_curso(y_valor, aa_valor, x_valor):
     return np.where(y_valor > 0, aa_valor * x_valor, np.nan)
 
-
+# Fórmula de devengamiento
 def generar_devengado(row, inicio_corte, fin_corte):
     if row['Fec. Hasta Art.'] < inicio_corte or row['Fec. Desde Art.'] > fin_corte:
         return 0
