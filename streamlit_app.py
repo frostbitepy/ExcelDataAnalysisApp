@@ -161,7 +161,9 @@ def main():
 
                 # Crear datos para la tabla
                 data_prima = {
+                    "Cantidad Produccion": [produccion_df.shape[0]],
                     "Prima devengada": [locale.format('%.2f', valor_produccion, grouping=True)],
+                    "Cantidad Siniestros": [siniestro_df.shape[0]],
                     "Sumatoria Siniestros": [locale.format('%.2f', siniestros, grouping=True)],
                     "Siniestros/Produccion": [porcentaje_siniestros]
                 }
