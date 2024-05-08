@@ -130,3 +130,27 @@ def eliminar_nulls(dataframe, nombre_columna):
     dataframe = dataframe[dataframe[nombre_columna].notnull()]
     dataframe = dataframe[dataframe[nombre_columna] != 0]
     return dataframe
+
+
+def capital_filter(dataframe, min_val, max_val, column):
+    """
+    Filter a Dataframe based on a condition.
+    
+    Parameters:
+    df (pandas.DataFrame): The DataFrame to filter.
+    min_val (float): The minimum value of the range.
+    max_val (float): The maximum value of the range.
+    column (str): The columns to apply the condition on.
+
+    Returns:
+    pandas.DataFrame: The filtered DataFrame.
+    """
+
+    # Use the boolean indexing feature of pandas to filter the Dataframe
+    filtered_df = dataframe[(dataframe[column] >= min_val) & (dataframe[column] <= max_val)]
+
+    # If the filtered DataFrame is empty, return a message indicating no values in the range
+    if filtered_df.empty:
+        return f"No values in the range {min_val} to {max_val} in the column '{column}'."
+
+    return filtered_df

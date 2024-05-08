@@ -5,6 +5,7 @@ import locale
 from datetime import datetime, timedelta
 from produccion_handler import procesar_produccion
 from siniestros_handler import procesar_siniestros
+from preprocessing import capital_filter
 
 
 products_dict = {
@@ -90,6 +91,26 @@ def main():
         via_importacion_list[2] = ''
 
 
+    st.sidebar.subheader("Filtro por Capitales")
+    # Add a checkbox to the sidebar
+    range_filter = st.sidebar.checkbox('Aplicar filtro por capitales')
+
+    # If the checkbox is checked, display two text fields for entering the minimum and maximum values
+    if range_filter:
+        min_val = st.sidebar.number_input('Enter minimum value')
+        max_val = st.sidebar.number_input('Enter maximum value')
+
+        # Display the formated number
+        if min_val:
+            st.sidebar.markdown(f"Minimum value: {int(min_val):,}".replace(",", "."))
+        if max_val:
+            st.sidebar.markdown(f"Maximum value: {int(max_val):,}".replace(",", "."))
+    
+    else:
+        min_val = None
+        max_val = None
+
+
    
     # Center elements
     st.title("Informes por ejercicio")
@@ -128,6 +149,10 @@ def main():
 
     # Check if both files are uploaded before proceeding
     if both_files_uploaded:
+
+        if min_val and max_val:
+            produccion_df = capital_filter(produccion_df, min_val, max_val, 'Suma Asegurada Art.')
+            siniestro_df = capital_filter(siniestro_df, min_val, max_val, 'Suma Asegurada Art.')
         
         produccion_results = procesar_produccion(produccion_df, fecha_inicio_corte, fecha_fin_corte, valid_products_selection, via_importacion_list)  
         siniestros_results = procesar_siniestros(siniestro_df, valid_products_selection, via_importacion_list)
