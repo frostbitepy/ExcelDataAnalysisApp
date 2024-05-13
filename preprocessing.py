@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import openpyxl
-
+import base64
 
 # Remove columns that are not needed function
 # Remove the diferent columns from the df that are not in the template
@@ -154,3 +154,38 @@ def capital_filter(dataframe, min_val, max_val, column):
         return f"No values in the range {min_val} to {max_val} in the column '{column}'."
 
     return filtered_df
+
+
+def year_filter(dataframe, min_year, max_year, column):
+    """
+    Filter a DataFrame based on a range of years.
+
+    Parameters:
+    dataframe (pandas.DataFrame): The DataFrame to filter.
+    min_year (int): The minimum year of the range.
+    max_year (int): The maximum year of the range.
+    column (str): The column to apply the condition on.
+
+    Returns:
+    pandas.DataFrame: The filtered DataFrame.
+    """
+
+    # Use the boolean indexing feature of pandas to filter the DataFrame
+    filtered_df = dataframe[(dataframe[column] >= min_year) & (dataframe[column] <= max_year)]
+
+    # If the filtered DataFrame is empty, return a message indicating no values in the range
+    if filtered_df.empty:
+        return f"No values in the range {min_year} to {max_year} in the column '{column}'."
+
+    return filtered_df
+
+
+def to_excel(df):
+    """
+    Write a DataFrame to an Excel file and return it as a string.
+    """
+    output = io.BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    df.to_excel(writer, sheet_name='Sheet0')
+    writer.save()
+    return output.getvalue()

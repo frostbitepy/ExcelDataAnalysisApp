@@ -2,10 +2,12 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import locale
+import io
+import xlsxwriter
 from datetime import datetime, timedelta
 from produccion_handler import procesar_produccion
 from siniestros_handler import procesar_siniestros
-from preprocessing import capital_filter
+from preprocessing import capital_filter, year_filter 
 
 
 products_dict = {
@@ -111,13 +113,34 @@ def main():
         max_val = None
 
 
+
+    st.sidebar.subheader("Filtro por Año del Vehículo")
+    # Add a checkbox to the sidebar
+    year_range = st.sidebar.checkbox('Aplicar filtro por Año')
+
+    # If the checkbox is checked, display two text fields for entering the minimum and maximum values
+    if year_range:
+        min_year = st.sidebar.number_input('Enter minimum value')
+        max_year = st.sidebar.number_input('Enter maximum value')
+
+        # Display the formated number
+        if min_year:
+            st.sidebar.markdown(f"Minimum value: {int(min_year):,}")
+        if max_year:
+            st.sidebar.markdown(f"Maximum value: {int(max_year):,}")
+    
+    else:
+        min_year = None
+        max_year = None
+    
+
    
     # Center elements
     st.title("Informes por ejercicio")
 
     fecha_inicio_corte = st.date_input("Fecha de Inicio Corte", value=pd.to_datetime('today'))
     fecha_fin_corte = st.date_input("Fecha de Fin Corte", value=pd.to_datetime('today'))
-    
+    1
 
     @st.cache_data
     def cargar_datos(uploaded_file):
@@ -153,6 +176,10 @@ def main():
         if min_val and max_val:
             produccion_df = capital_filter(produccion_df, min_val, max_val, 'Suma Asegurada Art.')
             siniestro_df = capital_filter(siniestro_df, min_val, max_val, 'Suma Asegurada Art.')
+
+        if min_year and max_year:
+            produccion_df = year_filter(produccion_df, min_year, max_year, 'Año')
+            siniestro_df = year_filter(siniestro_df, min_year, max_year, 'Año')
         
         produccion_results = procesar_produccion(produccion_df, fecha_inicio_corte, fecha_fin_corte, valid_products_selection, via_importacion_list)  
         siniestros_results = procesar_siniestros(siniestro_df, valid_products_selection, via_importacion_list)
@@ -219,7 +246,14 @@ def main():
 
                 # Mostrar dataframe
                 st.dataframe(produccion_df)
-  
+
+                excel_data = to_excel(produccion_df)
+                st.download_button(
+                    label="Download Dataframe as Excel",
+                    data=excel_data,
+                    file_name='output.xlsx',
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
 
 
 if __name__ == "__main__":
