@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import locale
-import io
-import xlsxwriter
 from datetime import datetime, timedelta
 from produccion_handler import procesar_produccion
 from siniestros_handler import procesar_siniestros
@@ -140,7 +138,7 @@ def main():
 
     fecha_inicio_corte = st.date_input("Fecha de Inicio Corte", value=pd.to_datetime('today'))
     fecha_fin_corte = st.date_input("Fecha de Fin Corte", value=pd.to_datetime('today'))
-    1
+    
 
     @st.cache_data
     def cargar_datos(uploaded_file):
@@ -213,9 +211,9 @@ def main():
 
                 # Crear datos para la tabla
                 data_prima = {
-                    "Cantidad Produccion": [produccion_df.shape[0]],
+                    "Cantidad Produccion": [locale.format('%.0f', produccion_df.shape[0], grouping=True)],
                     "Prima devengada": [locale.format('%.2f', valor_produccion, grouping=True)],
-                    "Cantidad Siniestros": [siniestro_df.shape[0]],
+                    "Cantidad Siniestros": [locale.format('%.0f', siniestro_df.shape[0], grouping=True)],
                     "Sumatoria Siniestros": [locale.format('%.2f', siniestros, grouping=True)],
                     "Siniestros/Produccion": [porcentaje_siniestros]
                 }
@@ -247,13 +245,6 @@ def main():
                 # Mostrar dataframe
                 st.dataframe(produccion_df)
 
-                excel_data = to_excel(produccion_df)
-                st.download_button(
-                    label="Download Dataframe as Excel",
-                    data=excel_data,
-                    file_name='output.xlsx',
-                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                )
 
 
 if __name__ == "__main__":

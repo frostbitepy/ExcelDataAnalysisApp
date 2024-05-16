@@ -180,12 +180,3 @@ def year_filter(dataframe, min_year, max_year, column):
     return filtered_df
 
 
-def to_excel(df):
-    """
-    Write a DataFrame to an Excel file and return it as a string.
-    """
-    output = io.BytesIO()
-    writer = pd.ExcelWriter(output, engine='xlsxwriter')
-    df.to_excel(writer, sheet_name='Sheet0')
-    writer.save()
-    return output.getvalue()
