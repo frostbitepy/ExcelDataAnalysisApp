@@ -107,7 +107,7 @@ def main():
             st.sidebar.markdown(f"Maximum value: {int(max_val):,}".replace(",", "."))
     
     else:
-        min_val = None
+        min_val = 0 
         max_val = None
 
 
@@ -172,8 +172,8 @@ def main():
     if both_files_uploaded:
 
         if min_val and max_val:
-            produccion_df = capital_filter(produccion_df, min_val, max_val, 'Suma Asegurada Art.')
-            siniestro_df = capital_filter(siniestro_df, min_val, max_val, 'Suma Asegurada Art.')
+            produccion_df = capital_filter(produccion_df, min_val, max_val, 'Auto Cober. Básica 1')
+            siniestro_df = capital_filter(siniestro_df, min_val, max_val, 'Auto Cober. Básica 1')
 
         if min_year and max_year:
             produccion_df = year_filter(produccion_df, min_year, max_year, 'Año')

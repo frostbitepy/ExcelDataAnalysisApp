@@ -84,7 +84,7 @@ def procesar_siniestros(siniestros_df, valid_products, via_importacion):
     df = eliminar_nulls(df, 'Fec. Stro.')
 
     # Sumar los sinietros
-    sumatoria_siniestros = suma_columna(df, 'Stro. Auto Cobertura Básica 1')
+    sumatoria_siniestros = suma_columna(df, 'Auto Cober. Básica 1')
 
     # Sumar las filas del dataframe
     sumatoria_filas = len(df)

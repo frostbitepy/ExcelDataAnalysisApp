@@ -8,3 +8,7 @@ venv/
 
 # Cache
 __pycache__/
+
+#txt
+other.txt
+tasks.txt
