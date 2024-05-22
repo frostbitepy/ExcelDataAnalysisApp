@@ -1,4 +1,23 @@
 HALLAR CANTIDAD DE PRIMA DEVENGADA
 HALLAR FRECUENCIA POR INTENCIDAD
 CANTIDAD DE LINEAS POR PRODUCCION DEVENGADA
+-
 CANTIDAD DE LINEAS POR SINIESTRO DEVENGADA
+
+Dividir con tipos de vehículo, rc.
+Cobertura basica 1 TODO RIESGO
+Cobertura basica 2 
+
+RC, NO TIENE COBERTURA BASICA 1 NI 2. La mayoria tiene ovp y otros no.
+
+Preparar productos para segmentación.
+
+Seria interesante que tenga un campo de:
+-Canal
+-Ciudad
+-Referencia, preguntar a belén. Cómo identifica quien trajo la propuesta.
+-Agentes
+
+
+La base del calculo es la PRIMA DEVENGADA y quitar los siniestros.
+-OBTENER LOS RANGOS
