@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 import locale
 from config_variables import products_dict
-from produccion_handler import procesar_produccion, sumar_rrc, sumar_rrc_sin_servicio, cantidad_produccion
+from produccion_handler import procesar_produccion, sumar_rrc, sumar_rrc_sin_servicio, cantidad_produccion, sumar_capital_asegurado
 from siniestros_handler import procesar_siniestros, sumar_siniestros, cantidad_siniestros
-from filters import filter_products, filter_via_importacion, filter_capitales, filter_year, capital_filter, year_filter
-from preprocessing import to_excel
+from filters import filter_products, filter_via_importacion, filter_capitales, filter_year, capital_filter, year_filter, apply_filters  
+from preprocessing import to_excel, eliminar_filas_por_valor
 
 
 def main():
@@ -48,9 +48,20 @@ def main():
 
     # Load production data
     produccion_df = cargar_datos(uploaded_produccion_file)
+    
+    # Eliminar filas de anulaciones de la columna 'Nombre Tipo Póliza'
+    if produccion_df is not None:
+        produccion_df = eliminar_filas_por_valor(produccion_df, 'Nombre Tipo Póliza', 'Anulacion') 
+
+    if produccion_df is not None:
+        cantidad_emitidos = cantidad_produccion(produccion_df)
 
     # Load siniestro data
     siniestro_df = cargar_datos(uploaded_siniestro_file)
+
+    # Eliminar filas de anulaciones de la columna 'Nombre Tipo Póliza'
+    if siniestro_df is not None:
+        siniestro_df = eliminar_filas_por_valor(siniestro_df, 'Nombre Tipo Póliza', 'Anulacion')
 
     # Check if both files are uploaded before proceeding
     if produccion_df is not None and siniestro_df is not None:
@@ -68,6 +79,8 @@ def main():
             # produccion_df = year_filter(produccion_df, min_year, max_year, 'Año')
             # siniestro_df = year_filter(siniestro_df, min_year, max_year, 'Año')
         
+        # Apply filters
+        produccion_df, siniestro_df = apply_filters(produccion_df, siniestro_df)
 
         produccion_results = procesar_produccion(produccion_df, fecha_inicio_corte, fecha_fin_corte)  
         siniestros_results = procesar_siniestros(siniestro_df)
@@ -99,18 +112,49 @@ def main():
                 # Set the locale to your desired format (e.g., Spanish)
                 locale.setlocale(locale.LC_NUMERIC, 'es_ES.UTF-8')  # Adjust the locale as needed
 
+                # Datos para la tabla
+                emitidos = cantidad_emitidos
+                cantidad_devengado = locale.format('%.0f', produccion_df.shape[0], grouping=True)
+                suma_asegurada = locale.format('%.2f', sumar_capital_asegurado(produccion_df), grouping=True)
+                suma_asegurada_promedio = locale.format('%.2f', sumar_capital_asegurado(produccion_df) / produccion_df.shape[0], grouping=True)
+                prima_devengada = locale.format('%.2f', valor_produccion, grouping=True)
+                prima_tecnica_devengada = locale.format('%.2f', valor_produccion_sin_servicio, grouping=True)
+                prima_promedio = locale.format('%.2f', valor_produccion / produccion_df.shape[0], grouping=True)
+                frecuencia = locale.format('%.2f', siniestro_df.shape[0] / produccion_df.shape[0], grouping=True)
+                intensidad = locale.format('%.2f', siniestros / siniestro_df.shape[0], grouping=True)
+                prima_tecnica_promedio = locale.format('%.2f', valor_produccion_sin_servicio / produccion_df.shape[0], grouping=True)
+                suma_siniestros = locale.format('%.2f', siniestros, grouping=True)
+                cantidad_siniestros = locale.format('%.0f', siniestro_df.shape[0], grouping=True)
+                porcentaje_siniestros = porcentaje_siniestros
+                porcentaje_siniestros_sin_servicio = porcentaje_siniestros_sin_servicio
+
+
                 # Crear datos para la tabla
                 data_prima = {
-                    "Cantidad Produccion": [locale.format('%.0f', produccion_df.shape[0], grouping=True)],
-                    "Prima devengada": [locale.format('%.2f', valor_produccion, grouping=True)],
-                    "Cantidad Siniestros": [locale.format('%.0f', siniestro_df.shape[0], grouping=True)],
-                    "Sumatoria Siniestros": [locale.format('%.2f', siniestros, grouping=True)],
+                    "Cantidad Emitido": [emitidos],
+                    "Cantidad Devengado": [cantidad_devengado],
+                    "Suma Asegurada Art.": [suma_asegurada],
+                    "Promedio Suma Asegurada": [suma_asegurada_promedio],
+                    "Prima devengada": [prima_devengada],
+                    "Prima Promedio": [prima_promedio],
+                    "Frecuencia": [frecuencia], 
+                    "Intensidad": [intensidad],
+                    "Cantidad Siniestros": [cantidad_siniestros],
+                    "Sumatoria Siniestros": [suma_siniestros],
                     "Siniestros/Produccion": [porcentaje_siniestros]
                 }
 
                 data_prima_tecnica = {
-                    "Prima técnica devengada": [locale.format('%.2f', valor_produccion_sin_servicio, grouping=True)],
-                    "Sumatoria Siniestros": [locale.format('%.2f', siniestros, grouping=True)],
+                    "Cantidad Emitido": [emitidos],
+                    "Cantidad Devengado": [cantidad_devengado],
+                    "Suma Asegurada Art.": [suma_asegurada],
+                    "Promedio Suma Asegurada": [suma_asegurada_promedio],
+                    "Prima técnica devengada": [prima_tecnica_devengada],
+                    "Prima Promedio": [prima_tecnica_promedio],
+                    "Frecuencia": [frecuencia],
+                    "Intensidad": [intensidad],
+                    "Cantidad Siniestros": [cantidad_siniestros],
+                    "Sumatoria Siniestros": [suma_siniestros],
                     "Siniestros/Produccion": [porcentaje_siniestros_sin_servicio]
                 }
 
@@ -118,12 +162,22 @@ def main():
                 df_prima = pd.DataFrame(data_prima)
                 df_prima_tecnica = pd.DataFrame(data_prima_tecnica)
 
-                # Mostrar la tablas
-                st.dataframe(df_prima, hide_index=True)
-                st.dataframe(df_prima_tecnica, hide_index=True)
+                # Convert DataFrames to HTML without index
+                df_prima_html = df_prima.to_html(index=False)
+                df_prima_tecnica_html = df_prima_tecnica.to_html(index=False)
 
-                # Convert the Dataframe to excel
-                excel_data = to_excel(produccion_df)
+                # Wrap the HTML in a div with center alignment
+                df_prima_html = f'<div style="text-align: center">{df_prima_html}</div>'
+                df_prima_tecnica_html = f'<div style="text-align: center">{df_prima_tecnica_html}</div>'
+
+                # Display the tables
+                st.markdown(df_prima_html, unsafe_allow_html=True)
+                st.markdown(df_prima_tecnica_html, unsafe_allow_html=True) 
+
+
+                with st.spinner("Generating Excel file..."):
+                    # Convert the Dataframe to excel
+                    excel_data = to_excel(produccion_df)
 
                 # Columnas a mostrar
                 columns_to_show = ['Nombre Producto','Via Importación','Prima Art.','Fec. Desde Art.','Fec. Hasta Art.','Plazo','Devengado','RRC']

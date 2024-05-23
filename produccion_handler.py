@@ -72,3 +72,9 @@ def sumar_rrc_sin_servicio(produccion_df):
 def cantidad_produccion(produccion_df):
     # Sumar las filas del dataframe
     return len(produccion_df)
+
+
+def sumar_capital_asegurado(produccion_df):
+    # Sumar los valores de la columna 'Suma Asegurada Art.'
+    suma_capitales = produccion_df['Suma Asegurada Art.'].sum()
+    return suma_capitales

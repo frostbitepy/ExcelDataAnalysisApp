@@ -141,3 +141,6 @@ def to_excel(df):
     return excel_data
 
 
+def get_unique_values(df, column_name):
+    unique_values = df[column_name].unique().tolist()
+    return unique_values

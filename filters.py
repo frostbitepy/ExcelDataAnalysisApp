@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from config_variables import product_to_capital
+from config_variables import filter_dict    
 
 def filter_products(products_dict):
     st.sidebar.subheader("Productos")
@@ -43,7 +44,7 @@ def filter_year():
     return min_year, max_year
 
 
-def capital_filter(dataframe, min_val, max_val, column):
+def deprecated_capital_filter(dataframe, min_val, max_val, column):
     """
     Filter a Dataframe based on a condition.
     
@@ -67,7 +68,7 @@ def capital_filter(dataframe, min_val, max_val, column):
     return filtered_df
 
 
-def updated_capital_filter(dataframe, min_val, max_val):
+def capital_filter(dataframe, min_val, max_val):
     """
     Filter a DataFrame based on a condition.
     
@@ -124,3 +125,34 @@ def year_filter(dataframe, min_year, max_year, column):
         return f"No values in the range {min_year} to {max_year} in the column '{column}'."
 
     return filtered_df
+
+
+def get_unique_values(df, column_name):
+    unique_values = df[column_name].unique().tolist()
+    return unique_values
+
+
+def apply_filters(df1, df2):
+    # Select filters
+    # selected_filters = st.sidebar.multiselect("Select filters", list(filter_dict.keys()))
+
+    # For each filter, display a checkbox in the sidebar
+    selected_filters = []
+    for filter in filter_dict.keys():
+        if st.sidebar.checkbox(f"{filter}"):
+            selected_filters.append(filter)
+
+    # For each selected filter, display a multiselect widget with the unique values of the corresponding column
+    for filter in selected_filters:
+        column_name = filter_dict[filter]
+        unique_values_df1 = get_unique_values(df1, column_name)
+        unique_values_df2 = get_unique_values(df2, column_name)
+        unique_values = list(set(unique_values_df1 + unique_values_df2))
+        selected_values = st.sidebar.multiselect(f"Select values for {filter}", unique_values)
+
+        # Filter the DataFrames based on the selected values, if any
+        if selected_values:
+            df1 = df1[df1[column_name].isin(selected_values)]
+            df2 = df2[df2[column_name].isin(selected_values)]
+    
+    return df1, df2
