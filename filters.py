@@ -237,7 +237,7 @@ def display_results(produccion_results, siniestros_results, cantidad_emitidos):
         locale.setlocale(locale.LC_NUMERIC, 'es_ES.UTF-8')  # Adjust the locale as needed
 
         # Datos para la tabla
-        emitidos = cantidad_emitidos
+        emitidos = locale.format('%.0f', cantidad_emitidos, grouping=True)
         cantidad_devengado = locale.format('%.0f', produccion_df.shape[0], grouping=True)
         suma_asegurada = locale.format('%.2f', sumar_capital_asegurado(produccion_df), grouping=True)
         suma_asegurada_promedio = locale.format('%.2f', sumar_capital_asegurado(produccion_df) / produccion_df.shape[0], grouping=True)
@@ -258,7 +258,7 @@ def display_results(produccion_results, siniestros_results, cantidad_emitidos):
             "Cantidad Devengado": [cantidad_devengado],
             "Suma Asegurada Art.": [suma_asegurada],
             "Promedio Suma Asegurada": [suma_asegurada_promedio],
-            "Prima devengada": [prima_devengada],
+            "Prima Devengada": [prima_devengada],
             "Prima Promedio": [prima_promedio],
             "Frecuencia": [frecuencia], 
             "Intensidad": [intensidad],
@@ -272,7 +272,7 @@ def display_results(produccion_results, siniestros_results, cantidad_emitidos):
             "Cantidad Devengado": [cantidad_devengado],
             "Suma Asegurada Art.": [suma_asegurada],
             "Promedio Suma Asegurada": [suma_asegurada_promedio],
-            "Prima técnica devengada": [prima_tecnica_devengada],
+            "Prima Técnica Devengada": [prima_tecnica_devengada],
             "Prima Promedio": [prima_tecnica_promedio],
             "Frecuencia": [frecuencia],
             "Intensidad": [intensidad],
@@ -294,7 +294,11 @@ def display_results(produccion_results, siniestros_results, cantidad_emitidos):
         df_prima_tecnica_html = f'<div style="text-align: center">{df_prima_tecnica_html}</div>'
 
         # Display the tables
-        st.subheader("Prima")
-        st.markdown(df_prima_html, unsafe_allow_html=True)
-        st.subheader("Prima Técnica")
-        st.markdown(df_prima_tecnica_html, unsafe_allow_html=True)
+        # st.subheader("Prima")
+        # st.markdown(df_prima_html, unsafe_allow_html=True)
+        # st.subheader("Prima Técnica")
+        # st.markdown(df_prima_tecnica_html, unsafe_allow_html=True)
+
+        # Display dataframes
+        st.dataframe(df_prima, use_container_width=False, hide_index=True)
+        st.dataframe(df_prima_tecnica, use_container_width=False, hide_index=True)
