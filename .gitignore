@@ -9,5 +9,8 @@ venv/
 # Cache
 __pycache__/
 
-#txt
+# txt
 other.txt
+
+# Word files
+*.docx
