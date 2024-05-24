@@ -167,7 +167,9 @@ def main():
                 df_prima_tecnica_html = df_prima_tecnica.to_html(index=False)
 
                 # Wrap the HTML in a div with center alignment
+                st.subheader("Prima")
                 df_prima_html = f'<div style="text-align: center">{df_prima_html}</div>'
+                st.subheader("Prima Técnica")
                 df_prima_tecnica_html = f'<div style="text-align: center">{df_prima_tecnica_html}</div>'
 
                 # Display the tables
