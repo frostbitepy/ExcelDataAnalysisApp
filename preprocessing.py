@@ -1,4 +1,5 @@
 import pandas as pd
+import streamlit as st
 import io
 
 # Remove columns that are not needed function
@@ -144,3 +145,30 @@ def to_excel(df):
 def get_unique_values(df, column_name):
     unique_values = df[column_name].unique().tolist()
     return unique_values
+
+
+def generate_and_download_excel(produccion_df, siniestro_df):
+    with st.spinner("Generating Excel file..."):
+        # Convert the Dataframe to excel
+        excel_data = to_excel(produccion_df)
+
+    # Columnas a mostrar
+    columns_to_show = ['Nombre Producto','Via Importación','Prima Art.','Fec. Desde Art.','Fec. Hasta Art.','Plazo','Devengado','RRC']
+    produccion_df = produccion_df[columns_to_show]
+
+    # Display the count of rows for the "Produccion" DataFrame
+    st.write("Cantidad Produccion:", produccion_df.shape[0])
+
+    # Display the count of rows for the "Siniestros" DataFrame
+    st.write("Cantidad Siniestros:", siniestro_df.shape[0]) 
+
+    # Mostrar dataframe
+    # st.dataframe(produccion_df, use_container_width=True, hide_index=True)
+
+    # Create a download button for the Excel data
+    st.download_button(
+        label="Download data as Excel",
+        data=excel_data,
+        file_name='data.xlsx',
+        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )

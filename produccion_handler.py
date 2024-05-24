@@ -12,7 +12,7 @@ def procesar_produccion(produccion_df, inicio_corte, fin_corte):
     df = produccion_df
 
     # Eliminar filas de anulaciones de la columna 'Nombre Tipo Póliza'
-    df = eliminar_filas_por_valor(df, 'Nombre Tipo Póliza', 'Anulacion')    
+    # df = eliminar_filas_por_valor(df, 'Nombre Tipo Póliza', 'Anulacion')    
 
     # Convert 'Fec. Hasta Art.' and 'Fec. Desde Art.' to datetime objects if not already
     df['Fec. Hasta Art.'] = pd.to_datetime(df['Fec. Hasta Art.'], errors='coerce')

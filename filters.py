@@ -1,7 +1,18 @@
 import streamlit as st
 import pandas as pd
+import locale
 from config_variables import product_to_capital
 from config_variables import filter_dict    
+from produccion_handler import (
+    procesar_produccion, 
+    sumar_rrc, 
+    sumar_rrc_sin_servicio, 
+    cantidad_produccion, 
+    sumar_capital_asegurado
+)
+from siniestros_handler import (
+    sumar_siniestros
+)
 
 def filter_products(products_dict):
     st.sidebar.subheader("Productos")
@@ -156,3 +167,134 @@ def apply_filters(df1, df2):
             df2 = df2[df2[column_name].isin(selected_values)]
     
     return df1, df2
+
+
+def outdated_apply_capital_filters(df1, df2):
+    # Ask the user for the number of capital filters to apply
+    num_filters = st.sidebar.slider("Number of capital filters", min_value=0, max_value=10, value=0)
+
+    # For each filter, display two input fields for the min and max capital values
+    for i in range(num_filters):
+        st.sidebar.text("_________________")
+        min_val = st.sidebar.number_input(f"Minimum capital for filter {i+1}", value=0.0)
+        max_val = st.sidebar.number_input(f"Maximum capital for filter {i+1}", value=0.0)
+        st.sidebar.text("_________________")
+
+        # Apply the capital filter to the dataframes
+        df1 = capital_filter(df1, min_val, max_val)
+        df2 = capital_filter(df2, min_val, max_val)
+
+    return df1, df2
+
+
+def apply_capital_filters(df1, df2):
+    # Ask the user for the number of capital filters to apply
+    num_filters = st.sidebar.slider("Numero de filtros por Capitales", min_value=0, max_value=10, value=0)
+
+    # Initialize a list to store the filtered dataframes
+    filtered_dfs = []
+
+    # For each filter, display two input fields for the min and max capital values
+    for i in range(num_filters):
+        min_val = st.sidebar.number_input(f"Capital mínimo para filtro {i+1}", value=0.0)
+        max_val = st.sidebar.number_input(f"Capital máximo para filtro {i+1}", value=0.0)
+        st.sidebar.write("___________")
+
+        # Apply the capital filter to the dataframes
+        filtered_df1 = capital_filter(df1, min_val, max_val)
+        filtered_df2 = capital_filter(df2, min_val, max_val)
+
+        # Add the filtered dataframes to the list
+        filtered_dfs.append((filtered_df1, filtered_df2))
+
+    return filtered_dfs
+
+
+def display_results(produccion_results, siniestros_results, cantidad_emitidos):
+    if produccion_results is not None and siniestros_results is not None:
+        # Variables iniciales
+        valor_produccion = sumar_rrc(produccion_results)
+        valor_produccion_sin_servicio = sumar_rrc_sin_servicio(produccion_results)
+        siniestros = sumar_siniestros(siniestros_results)
+                
+        produccion_df = produccion_results
+        siniestro_df = siniestros_results
+
+        # Convertir siniestros y valor_produccion a tipos numéricos si es posible
+        siniestros = pd.to_numeric(siniestros, errors='coerce')
+        valor_produccion = pd.to_numeric(valor_produccion, errors='coerce')
+        valor_produccion_sin_servicio = pd.to_numeric(valor_produccion_sin_servicio, errors='coerce')
+
+        # Calcular el porcentaje de siniestros/valor_produccion
+        porcentaje_siniestros = round((siniestros / valor_produccion) * 100, 2)
+        porcentaje_siniestros = str(porcentaje_siniestros) + "%"
+
+        # Calcular el porcentaje de siniestros/valor_produccion sin servicio
+        porcentaje_siniestros_sin_servicio = round((siniestros / valor_produccion_sin_servicio) * 100, 2)
+        porcentaje_siniestros_sin_servicio = str(porcentaje_siniestros_sin_servicio) + "%"
+
+        # Set the locale to your desired format (e.g., Spanish)
+        locale.setlocale(locale.LC_NUMERIC, 'es_ES.UTF-8')  # Adjust the locale as needed
+
+        # Datos para la tabla
+        emitidos = cantidad_emitidos
+        cantidad_devengado = locale.format('%.0f', produccion_df.shape[0], grouping=True)
+        suma_asegurada = locale.format('%.2f', sumar_capital_asegurado(produccion_df), grouping=True)
+        suma_asegurada_promedio = locale.format('%.2f', sumar_capital_asegurado(produccion_df) / produccion_df.shape[0], grouping=True)
+        prima_devengada = locale.format('%.2f', valor_produccion, grouping=True)
+        prima_tecnica_devengada = locale.format('%.2f', valor_produccion_sin_servicio, grouping=True)
+        prima_promedio = locale.format('%.2f', valor_produccion / produccion_df.shape[0], grouping=True)
+        frecuencia = locale.format('%.2f', siniestro_df.shape[0] / produccion_df.shape[0], grouping=True)
+        intensidad = locale.format('%.2f', siniestros / siniestro_df.shape[0], grouping=True)
+        prima_tecnica_promedio = locale.format('%.2f', valor_produccion_sin_servicio / produccion_df.shape[0], grouping=True)
+        suma_siniestros = locale.format('%.2f', siniestros, grouping=True)
+        cantidad_siniestros = locale.format('%.0f', siniestro_df.shape[0], grouping=True)
+        porcentaje_siniestros = porcentaje_siniestros
+        porcentaje_siniestros_sin_servicio = porcentaje_siniestros_sin_servicio
+
+        # Crear datos para la tabla
+        data_prima = {
+            "Cantidad Emitido": [emitidos],
+            "Cantidad Devengado": [cantidad_devengado],
+            "Suma Asegurada Art.": [suma_asegurada],
+            "Promedio Suma Asegurada": [suma_asegurada_promedio],
+            "Prima devengada": [prima_devengada],
+            "Prima Promedio": [prima_promedio],
+            "Frecuencia": [frecuencia], 
+            "Intensidad": [intensidad],
+            "Cantidad Siniestros": [cantidad_siniestros],
+            "Sumatoria Siniestros": [suma_siniestros],
+            "Siniestros/Produccion": [porcentaje_siniestros]
+        }
+
+        data_prima_tecnica = {
+            "Cantidad Emitido": [emitidos],
+            "Cantidad Devengado": [cantidad_devengado],
+            "Suma Asegurada Art.": [suma_asegurada],
+            "Promedio Suma Asegurada": [suma_asegurada_promedio],
+            "Prima técnica devengada": [prima_tecnica_devengada],
+            "Prima Promedio": [prima_tecnica_promedio],
+            "Frecuencia": [frecuencia],
+            "Intensidad": [intensidad],
+            "Cantidad Siniestros": [cantidad_siniestros],
+            "Sumatoria Siniestros": [suma_siniestros],
+            "Siniestros/Produccion": [porcentaje_siniestros_sin_servicio]
+        }
+
+        # Crear DataFrames
+        df_prima = pd.DataFrame(data_prima)
+        df_prima_tecnica = pd.DataFrame(data_prima_tecnica)
+
+        # Convert DataFrames to HTML without index
+        df_prima_html = df_prima.to_html(index=False)
+        df_prima_tecnica_html = df_prima_tecnica.to_html(index=False)
+
+        # Wrap the HTML in a div with center alignment
+        df_prima_html = f'<div style="text-align: center">{df_prima_html}</div>'
+        df_prima_tecnica_html = f'<div style="text-align: center">{df_prima_tecnica_html}</div>'
+
+        # Display the tables
+        st.subheader("Prima")
+        st.markdown(df_prima_html, unsafe_allow_html=True)
+        st.subheader("Prima Técnica")
+        st.markdown(df_prima_tecnica_html, unsafe_allow_html=True)
