@@ -159,6 +159,10 @@ def apply_filters(df1, df2):
         unique_values_df1 = get_unique_values(df1, column_name)
         unique_values_df2 = get_unique_values(df2, column_name)
         unique_values = list(set(unique_values_df1 + unique_values_df2))
+
+        # Remove empty values
+        unique_values = [value for value in unique_values if value and not pd.isna(value)]
+
         selected_values = st.sidebar.multiselect(f"Selecciona valores para {filter}", unique_values)
 
         # Filter the DataFrames based on the selected values, if any
