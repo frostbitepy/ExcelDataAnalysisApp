@@ -15,15 +15,9 @@ from siniestros_handler import (
     cantidad_siniestros
 )
 from filters import (
-    filter_products,
-    filter_via_importacion,
-    filter_capitales,
-    filter_year,
-    capital_filter, 
-    year_filter, 
     apply_filters,
     apply_capital_filters,
-    display_results
+    generate_results
 )  
 from preprocessing import (
     to_excel, 
@@ -35,15 +29,7 @@ def main():
     """
     Main function of the Streamlit app.
     """
-
-    # FILTROS
-    # st.sidebar.title("Filtros")
-    # valid_products_selection = filter_products(products_dict)
-    # via_importacion_list = filter_via_importacion()
-    # min_val, max_val = filter_capitales()
-    # min_year, max_year = filter_year()    
-
-   
+ 
     # Center elements
     st.title("Informes por ejercicio")
 
@@ -91,24 +77,17 @@ def main():
         both_files_uploaded = True
 
     # Check if both files are uploaded before proceeding
-    if both_files_uploaded:
-
-        
-        # if min_val and max_val:
-            # produccion_df = capital_filter(produccion_df, min_val, max_val, 'Auto Cober. Básica 1')
-            # siniestro_df = capital_filter(siniestro_df, min_val, max_val, 'Auto Cober. Básica 1')
-
-        # if min_year and max_year:
-            # produccion_df = year_filter(produccion_df, min_year, max_year, 'Año')
-            # siniestro_df = year_filter(siniestro_df, min_year, max_year, 'Año')
-
-        
+    if both_files_uploaded:        
         # Apply filters
         produccion_df, siniestro_df = apply_filters(produccion_df, siniestro_df)
 
         # Add a selectbox to let the user choose whether to apply multiple capital filters
         st.sidebar.title("Filtro de Capitales")
         apply_multiple_filters = st.sidebar.selectbox("Aplicar filtro por Capitales?", ["No", "Yes"])
+
+        # Initialize two empty lists to store the results
+        df_prima_list = []
+        df_prima_tecnica_list = []
         
         if apply_multiple_filters == "Yes":
             filtered_dfs = apply_capital_filters(produccion_df, siniestro_df)
@@ -119,24 +98,41 @@ def main():
 
                 # For each filtered dataframe, process and display the results
                 for i, (filtered_produccion_df, filtered_siniestro_df) in enumerate(filtered_dfs):
-                    st.subheader(f"Rango de Capitales {i+1}")
-
                     # Process production and claims data
                     with st.spinner("Generating..."):
                         produccion_results = procesar_produccion(filtered_produccion_df, fecha_inicio_corte, fecha_fin_corte)  
                         siniestros_results = procesar_siniestros(filtered_siniestro_df)
 
-                    # Display the results
-                    display_results(produccion_results, siniestros_results, cantidad_emitidos)
+                    # Generate the results and store them in the lists
+                    df_prima = generate_results(produccion_results, siniestros_results, cantidad_emitidos)[0]
+                    df_prima_tecnica = generate_results(produccion_results, siniestros_results, cantidad_emitidos)[1]
+                    df_prima_list.append(df_prima)
+                    df_prima_tecnica_list.append(df_prima_tecnica)
             else:
                 # Process production and claims data
                 with st.spinner("Generating..."):
                     produccion_results = procesar_produccion(produccion_df, fecha_inicio_corte, fecha_fin_corte)  
                     siniestros_results = procesar_siniestros(siniestro_df)
 
-                # Display the results
-                display_results(produccion_results, siniestros_results, cantidad_emitidos)
+                # Generate the results
+                df_prima = generate_results(produccion_results, siniestros_results, cantidad_emitidos)[0]
+                df_prima_tecnica = generate_results(produccion_results, siniestros_results, cantidad_emitidos)[1]
+                df_prima_list.append(df_prima)
+                df_prima_tecnica_list.append(df_prima_tecnica)
+    
+            # Concatenate all the DataFrames in the lists into single DataFrames
+            final_df_prima = pd.concat(df_prima_list, axis=0)
+            final_df_prima_tecnica = pd.concat(df_prima_tecnica_list, axis=0)
 
+            # Reset the index of the DataFrames
+            final_df_prima.reset_index(drop=True, inplace=True)
+            final_df_prima_tecnica.reset_index(drop=True, inplace=True)
+
+            # Display the final DataFrames
+            st.subheader("Prima")
+            st.dataframe(final_df_prima, hide_index=True)
+            st.subheader("Prima Técnica")
+            st.dataframe(final_df_prima_tecnica, hide_index=True)
                 
 if __name__ == "__main__":
     main()

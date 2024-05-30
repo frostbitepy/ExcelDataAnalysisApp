@@ -173,6 +173,7 @@ def apply_filters(df1, df2):
     return df1, df2
 
 
+# Deprecated
 def outdated_apply_capital_filters(df1, df2):
     # Ask the user for the number of capital filters to apply
     num_filters = st.sidebar.slider("Number of capital filters", min_value=0, max_value=10, value=0)
@@ -208,13 +209,25 @@ def apply_capital_filters(df1, df2):
         filtered_df1 = capital_filter(df1, min_val, max_val)
         filtered_df2 = capital_filter(df2, min_val, max_val)
 
+        # Check if the returned objects are dataframes
+        if isinstance(filtered_df1, pd.DataFrame) and isinstance(filtered_df2, pd.DataFrame):
+            # Format min_val and max_val with thousands separators
+            min_val_str = "{:,.0f}".format(min_val).replace(",", ".")
+            max_val_str = "{:,.0f}".format(max_val).replace(",", ".")
+
+            # Add a new column at the beginning of the filtered dataframes to indicate the capital range
+            for df in [filtered_df1, filtered_df2]:
+                df.insert(0, 'Rango de Capitales', f"{min_val_str} - {max_val_str}")
+        else:
+            st.error("Debe ingresar todos los rangos de capitales.")
+
         # Add the filtered dataframes to the list
         filtered_dfs.append((filtered_df1, filtered_df2))
 
     return filtered_dfs
 
 
-def display_results(produccion_results, siniestros_results, cantidad_emitidos):
+def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
     if produccion_results is not None and siniestros_results is not None:
         # Variables iniciales
         valor_produccion = sumar_rrc(produccion_results)
@@ -256,34 +269,69 @@ def display_results(produccion_results, siniestros_results, cantidad_emitidos):
         porcentaje_siniestros = porcentaje_siniestros
         porcentaje_siniestros_sin_servicio = porcentaje_siniestros_sin_servicio
 
-        # Crear datos para la tabla
-        data_prima = {
-            "Cantidad Emitido": [emitidos],
-            "Cantidad Devengado": [cantidad_devengado],
-            "Suma Asegurada Art.": [suma_asegurada],
-            "Promedio Suma Asegurada": [suma_asegurada_promedio],
-            "Prima Devengada": [prima_devengada],
-            "Prima Promedio": [prima_promedio],
-            "Frecuencia": [frecuencia], 
-            "Intensidad": [intensidad],
-            "Cantidad Siniestros": [cantidad_siniestros],
-            "Sumatoria Siniestros": [suma_siniestros],
-            "Siniestros/Produccion": [porcentaje_siniestros]
-        }
 
-        data_prima_tecnica = {
-            "Cantidad Emitido": [emitidos],
-            "Cantidad Devengado": [cantidad_devengado],
-            "Suma Asegurada Art.": [suma_asegurada],
-            "Promedio Suma Asegurada": [suma_asegurada_promedio],
-            "Prima Técnica Devengada": [prima_tecnica_devengada],
-            "Prima Promedio": [prima_tecnica_promedio],
-            "Frecuencia": [frecuencia],
-            "Intensidad": [intensidad],
-            "Cantidad Siniestros": [cantidad_siniestros],
-            "Sumatoria Siniestros": [suma_siniestros],
-            "Siniestros/Produccion": [porcentaje_siniestros_sin_servicio]
-        }
+        if "Rango de Capitales" in produccion_df.columns:
+            rango_capitales = produccion_df['Rango de Capitales'].iloc[0]
+            # Crear datos para la tabla
+            data_prima = {
+                "Rango de Capitales": [rango_capitales],
+                "Cantidad Emitido": [emitidos],
+                "Cantidad Devengado": [cantidad_devengado],
+                "Suma Asegurada Art.": [suma_asegurada],
+                "Promedio Suma Asegurada": [suma_asegurada_promedio],
+                "Prima Devengada": [prima_devengada],
+                "Prima Promedio": [prima_promedio],
+                "Frecuencia": [frecuencia], 
+                "Intensidad": [intensidad],
+                "Cantidad Siniestros": [cantidad_siniestros],
+                "Sumatoria Siniestros": [suma_siniestros],
+                "Siniestros/Produccion": [porcentaje_siniestros]
+            }
+
+            data_prima_tecnica = {
+                "Rango de Capitales": [rango_capitales],
+                "Cantidad Emitido": [emitidos],
+                "Cantidad Devengado": [cantidad_devengado],
+                "Suma Asegurada Art.": [suma_asegurada],
+                "Promedio Suma Asegurada": [suma_asegurada_promedio],
+                "Prima Técnica Devengada": [prima_tecnica_devengada],
+                "Prima Promedio": [prima_tecnica_promedio],
+                "Frecuencia": [frecuencia],
+                "Intensidad": [intensidad],
+                "Cantidad Siniestros": [cantidad_siniestros],
+                "Sumatoria Siniestros": [suma_siniestros],
+                "Siniestros/Produccion": [porcentaje_siniestros_sin_servicio]
+            }
+        
+        else:
+            # Crear datos para la tabla
+            data_prima = {
+                "Cantidad Emitido": [emitidos],
+                "Cantidad Devengado": [cantidad_devengado],
+                "Suma Asegurada Art.": [suma_asegurada],
+                "Promedio Suma Asegurada": [suma_asegurada_promedio],
+                "Prima Devengada": [prima_devengada],
+                "Prima Promedio": [prima_promedio],
+                "Frecuencia": [frecuencia], 
+                "Intensidad": [intensidad],
+                "Cantidad Siniestros": [cantidad_siniestros],
+                "Sumatoria Siniestros": [suma_siniestros],
+                "Siniestros/Produccion": [porcentaje_siniestros]
+            }
+
+            data_prima_tecnica = {
+                "Cantidad Emitido": [emitidos],
+                "Cantidad Devengado": [cantidad_devengado],
+                "Suma Asegurada Art.": [suma_asegurada],
+                "Promedio Suma Asegurada": [suma_asegurada_promedio],
+                "Prima Técnica Devengada": [prima_tecnica_devengada],
+                "Prima Promedio": [prima_tecnica_promedio],
+                "Frecuencia": [frecuencia],
+                "Intensidad": [intensidad],
+                "Cantidad Siniestros": [cantidad_siniestros],
+                "Sumatoria Siniestros": [suma_siniestros],
+                "Siniestros/Produccion": [porcentaje_siniestros_sin_servicio]
+            }
 
         # Crear DataFrames
         df_prima = pd.DataFrame(data_prima)
@@ -303,6 +351,5 @@ def display_results(produccion_results, siniestros_results, cantidad_emitidos):
         # st.subheader("Prima Técnica")
         # st.markdown(df_prima_tecnica_html, unsafe_allow_html=True)
 
-        # Display dataframes
-        st.dataframe(df_prima, use_container_width=False, hide_index=True)
-        st.dataframe(df_prima_tecnica, use_container_width=False, hide_index=True)
+        # Return a list of dataframe objects
+        return [df_prima, df_prima_tecnica]
