@@ -1,7 +1,6 @@
 from preprocessing import suma_columna, eliminar_nulls
 
 
-
 def procesar_siniestros(siniestros_df):
     # Eliminar filas que no son sinietros teniendo en cuenta
     # los valores nulos en la columna 'Fec. Stro.'

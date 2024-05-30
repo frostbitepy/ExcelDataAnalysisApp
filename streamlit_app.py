@@ -1,18 +1,11 @@
 import streamlit as st
 import pandas as pd
-import locale
-from config_variables import products_dict
 from produccion_handler import (
     procesar_produccion, 
-    sumar_rrc, 
-    sumar_rrc_sin_servicio, 
     cantidad_produccion, 
-    sumar_capital_asegurado
 )
 from siniestros_handler import (
     procesar_siniestros, 
-    sumar_siniestros, 
-    cantidad_siniestros
 )
 from filters import (
     apply_filters,
@@ -20,7 +13,6 @@ from filters import (
     generate_results
 )  
 from preprocessing import (
-    to_excel, 
     eliminar_filas_por_valor
 )
 

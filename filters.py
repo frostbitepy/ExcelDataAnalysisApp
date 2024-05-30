@@ -4,79 +4,13 @@ import locale
 from config_variables import product_to_capital
 from config_variables import filter_dict    
 from produccion_handler import (
-    procesar_produccion, 
     sumar_rrc, 
     sumar_rrc_sin_servicio, 
-    cantidad_produccion, 
     sumar_capital_asegurado
 )
 from siniestros_handler import (
     sumar_siniestros
 )
-
-def filter_products(products_dict):
-    st.sidebar.subheader("Productos")
-    valid_products_selection = st.sidebar.multiselect(
-        'Selecciona los productos a incluir en el informe:', products_dict.keys()
-    )
-    return valid_products_selection
-
-def filter_via_importacion():
-    st.sidebar.subheader("Vía Importación")
-    representante = st.sidebar.checkbox('REPRESENTANTE',value=True)
-    via_chile = st.sidebar.checkbox('VIA CHILE',value=True)
-    otros = st.sidebar.checkbox('OTROS',value=True)
-
-    via_importacion_list = [''] * 3
-    if representante:
-        via_importacion_list[0] = 'REPRESENTANTE'
-    if via_chile:
-        via_importacion_list[1] = 'VIA CHILE'
-    if otros:
-        via_importacion_list[2] = 'OTROS'
-    return via_importacion_list
-
-def filter_capitales():
-    st.sidebar.subheader("Filtro por Capitales")
-    range_filter = st.sidebar.checkbox('Aplicar filtro por capitales')
-    min_val, max_val = 0, None
-    if range_filter:
-        min_val = st.sidebar.number_input('Enter minimum value')
-        max_val = st.sidebar.number_input('Enter maximum value')
-    return min_val, max_val
-
-def filter_year():
-    st.sidebar.subheader("Filtro por Año del Vehículo")
-    year_range = st.sidebar.checkbox('Aplicar filtro por Año')
-    min_year, max_year = None, None
-    if year_range:
-        min_year = st.sidebar.number_input('Enter minimum value')
-        max_year = st.sidebar.number_input('Enter maximum value')
-    return min_year, max_year
-
-
-def deprecated_capital_filter(dataframe, min_val, max_val, column):
-    """
-    Filter a Dataframe based on a condition.
-    
-    Parameters:
-    df (pandas.DataFrame): The DataFrame to filter.
-    min_val (float): The minimum value of the range.
-    max_val (float): The maximum value of the range.
-    column (str): The columns to apply the condition on.
-
-    Returns:
-    pandas.DataFrame: The filtered DataFrame.
-    """
-
-    # Use the boolean indexing feature of pandas to filter the Dataframe
-    filtered_df = dataframe[(dataframe[column] >= min_val) & (dataframe[column] <= max_val)]
-
-    # If the filtered DataFrame is empty, return a message indicating no values in the range
-    if filtered_df.empty:
-        return f"No values in the range {min_val} to {max_val} in the column '{column}'."
-
-    return filtered_df
 
 
 def capital_filter(dataframe, min_val, max_val):
@@ -170,25 +104,6 @@ def apply_filters(df1, df2):
             df1 = df1[df1[column_name].isin(selected_values)]
             df2 = df2[df2[column_name].isin(selected_values)]
     
-    return df1, df2
-
-
-# Deprecated
-def outdated_apply_capital_filters(df1, df2):
-    # Ask the user for the number of capital filters to apply
-    num_filters = st.sidebar.slider("Number of capital filters", min_value=0, max_value=10, value=0)
-
-    # For each filter, display two input fields for the min and max capital values
-    for i in range(num_filters):
-        st.sidebar.text("_________________")
-        min_val = st.sidebar.number_input(f"Minimum capital for filter {i+1}", value=0.0)
-        max_val = st.sidebar.number_input(f"Maximum capital for filter {i+1}", value=0.0)
-        st.sidebar.text("_________________")
-
-        # Apply the capital filter to the dataframes
-        df1 = capital_filter(df1, min_val, max_val)
-        df2 = capital_filter(df2, min_val, max_val)
-
     return df1, df2
 
 

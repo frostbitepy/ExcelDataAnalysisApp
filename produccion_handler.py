@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from preprocessing import eliminar_filas_por_valor
 from excel_formulas import generar_devengado
 
 
