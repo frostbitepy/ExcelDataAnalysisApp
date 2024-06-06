@@ -185,12 +185,13 @@ def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
         porcentaje_siniestros_sin_servicio = porcentaje_siniestros_sin_servicio
 
 
+
         if "Rango de Capitales" in produccion_df.columns:
             rango_capitales = produccion_df['Rango de Capitales'].iloc[0]
             # Crear datos para la tabla
             data_prima = {
                 "Rango de Capitales": [rango_capitales],
-                "Cantidad Emitido": [emitidos],
+                # "Cantidad Emitido": [emitidos],
                 "Cantidad Devengado": [cantidad_devengado],
                 "Suma Asegurada Art.": [suma_asegurada],
                 "Promedio Suma Asegurada": [suma_asegurada_promedio],
@@ -205,7 +206,7 @@ def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
 
             data_prima_tecnica = {
                 "Rango de Capitales": [rango_capitales],
-                "Cantidad Emitido": [emitidos],
+                # "Cantidad Emitido": [emitidos],
                 "Cantidad Devengado": [cantidad_devengado],
                 "Suma Asegurada Art.": [suma_asegurada],
                 "Promedio Suma Asegurada": [suma_asegurada_promedio],
@@ -221,7 +222,7 @@ def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
         else:
             # Crear datos para la tabla
             data_prima = {
-                "Cantidad Emitido": [emitidos],
+                # "Cantidad Emitido": [emitidos],
                 "Cantidad Devengado": [cantidad_devengado],
                 "Suma Asegurada Art.": [suma_asegurada],
                 "Promedio Suma Asegurada": [suma_asegurada_promedio],
@@ -235,7 +236,7 @@ def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
             }
 
             data_prima_tecnica = {
-                "Cantidad Emitido": [emitidos],
+                # "Cantidad Emitido": [emitidos],
                 "Cantidad Devengado": [cantidad_devengado],
                 "Suma Asegurada Art.": [suma_asegurada],
                 "Promedio Suma Asegurada": [suma_asegurada_promedio],
