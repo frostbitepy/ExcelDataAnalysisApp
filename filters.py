@@ -114,11 +114,17 @@ def apply_capital_filters(df1, df2):
     # Initialize a list to store the filtered dataframes
     filtered_dfs = []
 
+    # Initialize the las max value
+    last_max_val = 0.0
+
     # For each filter, display two input fields for the min and max capital values
     for i in range(num_filters):
-        min_val = st.sidebar.number_input(f"Capital mínimo para filtro {i+1}", value=0.0)
+        min_val = st.sidebar.number_input(f"Capital mínimo para filtro {i+1}", value=last_max_val + 1.0)
         max_val = st.sidebar.number_input(f"Capital máximo para filtro {i+1}", value=0.0)
         st.sidebar.write("___________")
+
+        # Strore the max value for the next iteration
+        last_max_val = max_val
 
         # Apply the capital filter to the dataframes
         filtered_df1 = capital_filter(df1, min_val, max_val)
