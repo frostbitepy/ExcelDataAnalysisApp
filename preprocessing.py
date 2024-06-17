@@ -172,3 +172,14 @@ def generate_and_download_excel(produccion_df, siniestro_df):
         file_name='data.xlsx',
         mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
+
+def to_excel_file(df):
+    """
+    Write a DataFrame to an Excel file and return it as a bytes object.
+    """
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name='Resumen', index=False)
+        writer.save()  # Call 'save' on the 'ExcelWriter' object
+    excel_data = output.getvalue()
+    return excel_data

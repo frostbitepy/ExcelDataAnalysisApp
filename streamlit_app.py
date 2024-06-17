@@ -15,7 +15,8 @@ from filters import (
 )  
 from preprocessing import (
     eliminar_filas_por_valor,
-    generate_and_download_excel
+    generate_and_download_excel,
+    to_excel_file
 )
 
 
@@ -133,15 +134,13 @@ def main():
             # Create a BytesIO object
             excel_file = BytesIO()
 
-            # Create a Pandas Excel writer using XlsxWriter as the engine.
-            writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
-
             # Write each dataframe to a different worksheet.
-            final_df_prima.to_excel(writer, sheet_name='Prima')
-            final_df_prima_tecnica.to_excel(writer, sheet_name='Prima Tecnica')
+            excel_data_prima = to_excel(final_df_prima)
+            excel_data_prima_tecnica = to_excel(final_df_prima_tecnica)
 
-            # Close the Pandas Excel writer and output the Excel file to the stream.
-            writer.save()
+            # Write the data to the BytesIO object
+            excel_file.write(excel_data_prima)
+            excel_file.write(excel_data_prima_tecnica)
 
             # Seek to the beginning of the stream.
             excel_file.seek(0)
