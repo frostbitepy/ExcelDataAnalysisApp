@@ -34,7 +34,7 @@ def main():
         if uploaded_file:
             with st.spinner("Loading data..."):
                 df = pd.read_excel(uploaded_file)
-            st.success("Data loaded successfully!")
+            # st.success("Data loaded successfully!")
             return df
         else:
             return None
@@ -50,6 +50,8 @@ def main():
     # Load production data
     produccion_df = cargar_datos(uploaded_produccion_file)
     
+    if produccion_df is not None:
+        st.success("Data loaded successfully!")
     # Eliminar filas de anulaciones de la columna 'Nombre Tipo Póliza'
     if produccion_df is not None:
         produccion_df = eliminar_filas_por_valor(produccion_df, 'Nombre Tipo Póliza', 'Anulacion') 
