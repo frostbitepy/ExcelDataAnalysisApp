@@ -258,6 +258,14 @@ def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
         df_prima = pd.DataFrame(data_prima)
         df_prima_tecnica = pd.DataFrame(data_prima_tecnica)
 
+        # Apply the format_number_es function to each numeric column in the dataframes
+        numeric_columns = ['Cantidad Devengado', 'Suma Asegurada Art.', 'Promedio Suma Asegurada', 'Prima Devengada', 'Prima Promedio', 'Frecuencia', 'Intensidad', 'Cantidad Siniestros', 'Sumatoria Siniestros', 'Siniestros/Produccion']
+        for column in numeric_columns:
+            if column in df_prima.columns:
+                df_prima[column] = df_prima[column].apply(format_number_es)
+            if column in df_prima_tecnica.columns:
+                df_prima_tecnica[column] = df_prima_tecnica[column].apply(format_number_es)
+
         # Convert DataFrames to HTML without index
         df_prima_html = df_prima.to_html(index=False)
         df_prima_tecnica_html = df_prima_tecnica.to_html(index=False)
@@ -265,12 +273,6 @@ def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
         # Wrap the HTML in a div with center alignment
         df_prima_html = f'<div style="text-align: center">{df_prima_html}</div>'
         df_prima_tecnica_html = f'<div style="text-align: center">{df_prima_tecnica_html}</div>'
-
-        # Display the tables
-        # st.subheader("Prima")
-        # st.markdown(df_prima_html, unsafe_allow_html=True)
-        # st.subheader("Prima Técnica")
-        # st.markdown(df_prima_tecnica_html, unsafe_allow_html=True)
 
         # Return a list of dataframe objects
         return [df_prima, df_prima_tecnica]
