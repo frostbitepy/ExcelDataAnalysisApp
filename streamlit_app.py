@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from io import BytesIO
 from produccion_handler import (
     procesar_produccion, 
     cantidad_produccion, 
@@ -13,7 +14,8 @@ from filters import (
     generate_results
 )  
 from preprocessing import (
-    eliminar_filas_por_valor
+    eliminar_filas_por_valor,
+    generate_and_download_excel
 )
 
 
@@ -127,6 +129,30 @@ def main():
             st.dataframe(final_df_prima)
             st.subheader("Prima Técnica")
             st.dataframe(final_df_prima_tecnica)
+
+            # Create a BytesIO object
+            excel_file = BytesIO()
+
+            # Create a Pandas Excel writer using XlsxWriter as the engine.
+            writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
+
+            # Write each dataframe to a different worksheet.
+            final_df_prima.to_excel(writer, sheet_name='Prima')
+            final_df_prima_tecnica.to_excel(writer, sheet_name='Prima Tecnica')
+
+            # Close the Pandas Excel writer and output the Excel file to the stream.
+            writer.save()
+
+            # Seek to the beginning of the stream.
+            excel_file.seek(0)
+
+            # Create a download button for the Excel file.
+            st.download_button(
+                label="Descargar Reporte",
+                data=excel_file,
+                file_name='Reporte.xlsx',
+                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
                 
 if __name__ == "__main__":
     main()
