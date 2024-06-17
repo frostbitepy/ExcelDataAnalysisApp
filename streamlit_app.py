@@ -124,9 +124,9 @@ def main():
 
             # Display the final DataFrames
             st.subheader("Prima")
-            st.dataframe(final_df_prima, hide_index=True)
+            st.dataframe(final_df_prima)
             st.subheader("Prima Técnica")
-            st.dataframe(final_df_prima_tecnica, hide_index=True)
+            st.dataframe(final_df_prima_tecnica)
                 
 if __name__ == "__main__":
     main()
