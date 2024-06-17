@@ -29,7 +29,7 @@ def main():
     fecha_fin_corte = st.date_input("Fecha de Fin Corte", value=pd.to_datetime('today'))
     
 
-    @st.cache_data
+    @st.cache
     def cargar_datos(uploaded_file):
         if uploaded_file:
             with st.spinner("Loading data..."):
