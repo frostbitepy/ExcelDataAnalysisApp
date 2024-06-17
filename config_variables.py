@@ -114,5 +114,6 @@ filter_dict = {
     "Organizador Principal": "Nombre Organizador Principal",
     "Organizador": "Nombre Organizador",
     "Canal Ventas": "Canal Venta",
-    "Año Vehiculo": "Año"
+    "Año Vehiculo": "Año",
+    "Vía Importación": "Via Importación"
 }
