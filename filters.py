@@ -173,7 +173,7 @@ def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
         porcentaje_siniestros_sin_servicio = str(porcentaje_siniestros_sin_servicio) + "%"
 
         # Set the locale to your desired format (e.g., Spanish)
-        locale.setlocale(locale.LC_NUMERIC, 'es_ES.UTF-8')  # Adjust the locale as needed
+        locale.setlocale(locale.LC_ALL, 'es_ES.UTF-8')  # Adjust the locale as needed
 
         # Datos para la tabla
         emitidos = locale.format('%.0f', cantidad_emitidos, grouping=True)
