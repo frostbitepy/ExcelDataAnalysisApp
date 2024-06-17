@@ -137,7 +137,7 @@ def to_excel(df):
     """
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        df.to_excel(writer, sheet_name='Resumen', index=False)
+        df.to_excel(writer, index=False)
     excel_data = output.getvalue()
     return excel_data
 
