@@ -173,7 +173,7 @@ def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
         porcentaje_siniestros_sin_servicio = str(porcentaje_siniestros_sin_servicio) + "%"
 
         # Set the locale to your desired format (e.g., Spanish)
-        locale.setlocale(locale.LC_ALL, 'es_ES')  # Adjust the locale as needed
+        locale.setlocale(locale.LC_ALL, 'es_ES.UTF-8')  # Adjust the locale as needed
 
         # Datos para la tabla
         emitidos = locale.format('%.0f', cantidad_emitidos, grouping=True)
@@ -279,5 +279,10 @@ def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
 
 
 def format_number_es(number):
+    # If the input is a string, try to convert it to a float
+    if isinstance(number, str):
+        try:
+            number = float(number.replace(',', ''))
+        except ValueError:
+            return number  # If the conversion fails, return the original string
     return format_decimal(number, locale='es_ES')
-
