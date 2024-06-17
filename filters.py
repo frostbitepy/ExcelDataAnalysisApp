@@ -3,6 +3,7 @@ import pandas as pd
 import locale
 from config_variables import product_to_capital
 from config_variables import filter_dict    
+from babel.numbers import format_decimal
 from produccion_handler import (
     sumar_rrc, 
     sumar_rrc_sin_servicio, 
@@ -197,62 +198,60 @@ def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
             # Crear datos para la tabla
             data_prima = {
                 "Rango de Capitales": [rango_capitales],
-                # "Cantidad Emitido": [emitidos],
-                "Cantidad Devengado": [cantidad_devengado],
-                "Suma Asegurada Art.": [suma_asegurada],
-                "Promedio Suma Asegurada": [suma_asegurada_promedio],
-                "Prima Devengada": [prima_devengada],
-                "Prima Promedio": [prima_promedio],
-                "Frecuencia": [frecuencia], 
-                "Intensidad": [intensidad],
-                "Cantidad Siniestros": [cantidad_siniestros],
-                "Sumatoria Siniestros": [suma_siniestros],
-                "Siniestros/Produccion": [porcentaje_siniestros]
+                "Cantidad Devengado": [format_number_es(cantidad_devengado)],
+                "Suma Asegurada Art.": [format_number_es(suma_asegurada)],
+                "Promedio Suma Asegurada": [format_number_es(suma_asegurada_promedio)],
+                "Prima Devengada": [format_number_es(prima_devengada)],
+                "Prima Promedio": [format_number_es(prima_promedio)],
+                "Frecuencia": [format_number_es(frecuencia)], 
+                "Intensidad": [format_number_es(intensidad)],
+                "Cantidad Siniestros": [format_number_es(cantidad_siniestros)],
+                "Sumatoria Siniestros": [format_number_es(suma_siniestros)],
+                "Siniestros/Produccion": [format_number_es(porcentaje_siniestros)]
             }
 
             data_prima_tecnica = {
                 "Rango de Capitales": [rango_capitales],
-                # "Cantidad Emitido": [emitidos],
-                "Cantidad Devengado": [cantidad_devengado],
-                "Suma Asegurada Art.": [suma_asegurada],
-                "Promedio Suma Asegurada": [suma_asegurada_promedio],
-                "Prima Técnica Devengada": [prima_tecnica_devengada],
-                "Prima Promedio": [prima_tecnica_promedio],
-                "Frecuencia": [frecuencia],
-                "Intensidad": [intensidad],
-                "Cantidad Siniestros": [cantidad_siniestros],
-                "Sumatoria Siniestros": [suma_siniestros],
-                "Siniestros/Produccion": [porcentaje_siniestros_sin_servicio]
+                "Cantidad Devengado": [format_number_es(cantidad_devengado)],
+                "Suma Asegurada Art.": [format_number_es(suma_asegurada)],
+                "Promedio Suma Asegurada": [format_number_es(suma_asegurada_promedio)],
+                "Prima Técnica Devengada": [format_number_es(prima_tecnica_devengada)],
+                "Prima Promedio": [format_number_es(prima_tecnica_promedio)],
+                "Frecuencia": [format_number_es(frecuencia)],
+                "Intensidad": [format_number_es(intensidad)],
+                "Cantidad Siniestros": [format_number_es(cantidad_siniestros)],
+                "Sumatoria Siniestros": [format_number_es(suma_siniestros)],
+                "Siniestros/Produccion": [format_number_es(porcentaje_siniestros_sin_servicio)]
             }
         
         else:
             # Crear datos para la tabla
             data_prima = {
                 # "Cantidad Emitido": [emitidos],
-                "Cantidad Devengado": [cantidad_devengado],
-                "Suma Asegurada Art.": [suma_asegurada],
-                "Promedio Suma Asegurada": [suma_asegurada_promedio],
-                "Prima Devengada": [prima_devengada],
-                "Prima Promedio": [prima_promedio],
-                "Frecuencia": [frecuencia], 
-                "Intensidad": [intensidad],
-                "Cantidad Siniestros": [cantidad_siniestros],
-                "Sumatoria Siniestros": [suma_siniestros],
-                "Siniestros/Produccion": [porcentaje_siniestros]
+                "Cantidad Devengado": [format_number_es(cantidad_devengado)],
+                "Suma Asegurada Art.": [format_number_es(suma_asegurada)],
+                "Promedio Suma Asegurada": [format_number_es(suma_asegurada_promedio)],
+                "Prima Devengada": [format_number_es(prima_devengada)],
+                "Prima Promedio": [format_number_es(prima_promedio)],
+                "Frecuencia": [format_number_es(frecuencia)], 
+                "Intensidad": [format_number_es(intensidad)],
+                "Cantidad Siniestros": [format_number_es(cantidad_siniestros)],
+                "Sumatoria Siniestros": [format_number_es(suma_siniestros)],
+                "Siniestros/Produccion": [format_number_es(porcentaje_siniestros)]
             }
 
             data_prima_tecnica = {
                 # "Cantidad Emitido": [emitidos],
-                "Cantidad Devengado": [cantidad_devengado],
-                "Suma Asegurada Art.": [suma_asegurada],
-                "Promedio Suma Asegurada": [suma_asegurada_promedio],
-                "Prima Técnica Devengada": [prima_tecnica_devengada],
-                "Prima Promedio": [prima_tecnica_promedio],
-                "Frecuencia": [frecuencia],
-                "Intensidad": [intensidad],
-                "Cantidad Siniestros": [cantidad_siniestros],
-                "Sumatoria Siniestros": [suma_siniestros],
-                "Siniestros/Produccion": [porcentaje_siniestros_sin_servicio]
+                "Cantidad Devengado": [format_number_es(cantidad_devengado)],
+                "Suma Asegurada Art.": [format_number_es(suma_asegurada)],
+                "Promedio Suma Asegurada": [format_number_es(suma_asegurada_promedio)],
+                "Prima Técnica Devengada": [format_number_es(prima_tecnica_devengada)],
+                "Prima Promedio": [format_number_es(prima_tecnica_promedio)],
+                "Frecuencia": [format_number_es(frecuencia)],
+                "Intensidad": [format_number_es(intensidad)],
+                "Cantidad Siniestros": [format_number_es(cantidad_siniestros)],
+                "Sumatoria Siniestros": [format_number_es(suma_siniestros)],
+                "Siniestros/Produccion": [format_number_es(porcentaje_siniestros_sin_servicio)]
             }
 
         # Crear DataFrames
@@ -275,3 +274,8 @@ def generate_results(produccion_results, siniestros_results, cantidad_emitidos):
 
         # Return a list of dataframe objects
         return [df_prima, df_prima_tecnica]
+
+
+def format_number_es(number):
+    return format_decimal(number, locale='es_ES')
+
