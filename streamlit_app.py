@@ -16,7 +16,7 @@ from filters import (
 from preprocessing import (
     eliminar_filas_por_valor,
     generate_and_download_excel,
-    to_excel_file
+    to_excel
 )
 
 
@@ -135,8 +135,8 @@ def main():
             excel_file = BytesIO()
 
             # Write each dataframe to a different worksheet.
-            excel_data_prima = to_excel_file(final_df_prima)
-            excel_data_prima_tecnica = to_excel_file(final_df_prima_tecnica)
+            excel_data_prima = to_excel(final_df_prima)
+            excel_data_prima_tecnica = to_excel(final_df_prima_tecnica)
 
             # Write the data to the BytesIO object
             excel_file.write(excel_data_prima)
