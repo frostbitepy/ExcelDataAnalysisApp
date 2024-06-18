@@ -131,27 +131,7 @@ def main():
             st.subheader("Prima Técnica")
             st.dataframe(final_df_prima_tecnica)
 
-            # Create a BytesIO object
-            excel_file = BytesIO()
-
-            # Write each dataframe to a different worksheet.
-            excel_data_prima = to_excel(final_df_prima)
-            excel_data_prima_tecnica = to_excel(final_df_prima_tecnica)
-
-            # Write the data to the BytesIO object
-            excel_file.write(excel_data_prima)
-            excel_file.write(excel_data_prima_tecnica)
-
-            # Seek to the beginning of the stream.
-            excel_file.seek(0)
-
-            # Create a download button for the Excel file.
-            st.download_button(
-                label="Descargar Reporte",
-                data=excel_file,
-                file_name='Reporte.xlsx',
-                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            )
+            generate_and_download_excel(produccion_df, siniestro_df, final_df_prima, final_df_prima_tecnica)
                 
 if __name__ == "__main__":
     main()

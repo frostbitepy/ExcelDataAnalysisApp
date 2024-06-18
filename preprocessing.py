@@ -131,7 +131,7 @@ def eliminar_nulls(dataframe, nombre_columna):
 
 
 
-def to_excel(df):
+def to_excel_aux(df):
     """
     Write a DataFrame to an Excel file and return it as a bytes object.
     """
@@ -147,7 +147,7 @@ def get_unique_values(df, column_name):
     return unique_values
 
 
-def generate_and_download_excel(produccion_df, siniestro_df):
+def generate_and_download_excel_aux(produccion_df, siniestro_df, final_df_prima, final_df_prima_tecnica):
     with st.spinner("Generating Excel file..."):
         # Convert the Dataframe to excel
         excel_data = to_excel(produccion_df)
@@ -157,10 +157,10 @@ def generate_and_download_excel(produccion_df, siniestro_df):
     produccion_df = produccion_df[columns_to_show]
 
     # Display the count of rows for the "Produccion" DataFrame
-    st.write("Cantidad Produccion:", produccion_df.shape[0])
+    # st.write("Cantidad Produccion:", produccion_df.shape[0])
 
     # Display the count of rows for the "Siniestros" DataFrame
-    st.write("Cantidad Siniestros:", siniestro_df.shape[0]) 
+    # st.write("Cantidad Siniestros:", siniestro_df.shape[0]) 
 
     # Mostrar dataframe
     # st.dataframe(produccion_df, use_container_width=True, hide_index=True)
@@ -173,3 +173,29 @@ def generate_and_download_excel(produccion_df, siniestro_df):
         mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
 
+def to_excel(df, writer, sheet_name):
+    """
+    Write a DataFrame to an Excel file and return it as a bytes object.
+    """
+    df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+def generate_and_download_excel(produccion_df, siniestro_df, final_df_prima, final_df_prima_tecnica):
+    with st.spinner("Generating Excel file..."):
+        # Create a BytesIO object
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            # Convert the Dataframes to excel
+            to_excel(produccion_df, writer, 'Produccion')
+            to_excel(siniestro_df, writer, 'Siniestros')
+            to_excel(final_df_prima, writer, 'Prima')
+            to_excel(final_df_prima_tecnica, writer, 'Prima Tecnica')
+            writer.save()
+        excel_data = output.getvalue()
+
+    # Create a download button for the Excel data
+    st.download_button(
+        label="Download data as Excel",
+        data=excel_data,
+        file_name='data.xlsx',
+        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
