@@ -1,6 +1,5 @@
 import pandas as pd
 import streamlit as st
-import io
 
 # Remove columns that are not needed function
 # Remove the diferent columns from the df that are not in the template
