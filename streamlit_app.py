@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from io import BytesIO
+import io
 from produccion_handler import (
     procesar_produccion, 
     cantidad_produccion, 
@@ -42,7 +42,7 @@ def main():
         else:
             return None
         
-    @st.cache_data
+    @st.cache
     def convert_dict_to_excel(data_dict):
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
