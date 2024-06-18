@@ -121,7 +121,9 @@ def apply_capital_filters(df1, df2):
     # For each filter, display two input fields for the min and max capital values
     for i in range(num_filters):
         min_val = st.sidebar.number_input(f"Capital mínimo para filtro {i+1}", value=last_max_val + 1.0)
+        st.sidebar.markdown(f"**Monto:** {min_val:,.0f}".replace(",", "."))
         max_val = st.sidebar.number_input(f"Capital máximo para filtro {i+1}", value=0.0)
+        st.sidebar.markdown(f"**Monto:** {max_val:,.0f}".replace(",", "."))
         st.sidebar.write("___________")
 
         # Strore the max value for the next iteration

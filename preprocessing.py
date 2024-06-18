@@ -130,72 +130,8 @@ def eliminar_nulls(dataframe, nombre_columna):
     return dataframe
 
 
-
-def to_excel_aux(df):
-    """
-    Write a DataFrame to an Excel file and return it as a bytes object.
-    """
-    output = io.BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        df.to_excel(writer, index=False)
-    excel_data = output.getvalue()
-    return excel_data
-
-
 def get_unique_values(df, column_name):
     unique_values = df[column_name].unique().tolist()
     return unique_values
 
 
-def generate_and_download_excel_aux(produccion_df, siniestro_df, final_df_prima, final_df_prima_tecnica):
-    with st.spinner("Generating Excel file..."):
-        # Convert the Dataframe to excel
-        excel_data = to_excel(produccion_df)
-
-    # Columnas a mostrar
-    columns_to_show = ['Nombre Producto','Via Importación','Prima Art.','Fec. Desde Art.','Fec. Hasta Art.','Plazo','Devengado','RRC']
-    produccion_df = produccion_df[columns_to_show]
-
-    # Display the count of rows for the "Produccion" DataFrame
-    # st.write("Cantidad Produccion:", produccion_df.shape[0])
-
-    # Display the count of rows for the "Siniestros" DataFrame
-    # st.write("Cantidad Siniestros:", siniestro_df.shape[0]) 
-
-    # Mostrar dataframe
-    # st.dataframe(produccion_df, use_container_width=True, hide_index=True)
-
-    # Create a download button for the Excel data
-    st.download_button(
-        label="Download data as Excel",
-        data=excel_data,
-        file_name='data.xlsx',
-        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
-
-def to_excel(df, writer, sheet_name):
-    """
-    Write a DataFrame to an Excel file and return it as a bytes object.
-    """
-    df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-def generate_and_download_excel(produccion_df, siniestro_df, final_df_prima, final_df_prima_tecnica):
-    with st.spinner("Generating Excel file..."):
-        # Create a BytesIO object
-        output = io.BytesIO()
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            # Convert the Dataframes to excel
-            to_excel(produccion_df, writer, 'Produccion')
-            to_excel(siniestro_df, writer, 'Siniestros')
-            to_excel(final_df_prima, writer, 'Prima')
-            to_excel(final_df_prima_tecnica, writer, 'Prima Tecnica')
-            writer.save()
-        excel_data = output.getvalue()
-
-    # Create a download button for the Excel data
-    st.download_button(
-        label="Download data as Excel",
-        data=excel_data,
-        file_name='data.xlsx',
-        mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
