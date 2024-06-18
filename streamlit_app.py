@@ -62,8 +62,6 @@ def main():
                         max_len = max(item[column].astype(str).apply(len).max(), len(column))
                         writer.sheets[sheet_name_item].set_column(j, j, max_len + 2, cell_format)
 
-            writer.save()  # Don't forget to save the ExcelWriter object
-
         processed_data = output.getvalue()
         return processed_data
 
