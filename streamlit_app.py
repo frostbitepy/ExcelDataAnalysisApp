@@ -41,6 +41,31 @@ def main():
             return df
         else:
             return None
+        
+    @st.cache_data
+    def convert_dict_to_excel(data_dict):
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+            workbook = writer.book
+
+            cell_format = workbook.add_format({'text_wrap': False})
+
+            for key, value_list in data_dict.items():
+                sheet_name = str(key)
+
+                for i, item in enumerate(value_list):
+                    sheet_name_item = sheet_name
+                
+                    item.to_excel(writer, sheet_name=sheet_name_item, index=False, startrow=i * (len(item) + 10), header=True)
+                
+                    for j, column in enumerate(item.columns):
+                        max_len = max(item[column].astype(str).apply(len).max(), len(column))
+                        writer.sheets[sheet_name_item].set_column(j, j, max_len + 2, cell_format)
+
+            writer.save()  # Don't forget to save the ExcelWriter object
+
+        processed_data = output.getvalue()
+        return processed_data
 
     # Upload Produccion Excel file
     uploaded_produccion_file = st.file_uploader("Cargar planilla de producción", type=["xlsx"])
@@ -131,7 +156,24 @@ def main():
             st.subheader("Prima Técnica")
             st.dataframe(final_df_prima_tecnica)
 
-            generate_and_download_excel(produccion_df, siniestro_df, final_df_prima, final_df_prima_tecnica)
+            # Create a dictionary with the dataframes
+            data_dict = {
+                'Produccion': [produccion_df],
+                'Siniestros': [siniestro_df],
+                'Prima': [final_df_prima],
+                'Prima Tecnica': [final_df_prima_tecnica]
+            }
+
+            # Convert the dictionary to Excel data
+            excel_data = convert_dict_to_excel(data_dict)
+
+            # Create a download button for the Excel data
+            st.download_button(
+                label="Descargar resumen en Excel",
+                data=excel_data,
+                file_name='Resumen.xlsx',
+                mime='text/xlsx'
+            )
                 
 if __name__ == "__main__":
     main()
