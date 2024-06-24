@@ -24,7 +24,7 @@ def main():
     """
  
     # Center elements
-    st.title("Informes de Siniestralidad y Producción")
+    st.title("Informes de Siniestralidad")
 
     fecha_inicio_corte = st.date_input("Fecha de Inicio Corte", value=pd.to_datetime('today'))
     fecha_fin_corte = st.date_input("Fecha de Fin Corte", value=pd.to_datetime('today'))
