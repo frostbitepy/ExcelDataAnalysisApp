@@ -24,7 +24,7 @@ def main():
     """
  
     # Center elements
-    st.title("Informes por ejercicio")
+    st.title("Informes de Siniestralidad y Producción")
 
     fecha_inicio_corte = st.date_input("Fecha de Inicio Corte", value=pd.to_datetime('today'))
     fecha_fin_corte = st.date_input("Fecha de Fin Corte", value=pd.to_datetime('today'))
@@ -33,7 +33,7 @@ def main():
     @st.cache
     def cargar_datos(uploaded_file):
         if uploaded_file:
-            with st.spinner("Loading data..."):
+            with st.spinner("Cargando datos..."):
                 df = pd.read_excel(uploaded_file)
             # st.success("Data loaded successfully!")
             return df
@@ -75,7 +75,7 @@ def main():
     produccion_df = cargar_datos(uploaded_produccion_file)
     
     if produccion_df is not None:
-        st.success("Data loaded successfully!")
+        st.success("Datos cargados con éxito!")
     # Eliminar filas de anulaciones de la columna 'Nombre Tipo Póliza'
     if produccion_df is not None:
         produccion_df = eliminar_filas_por_valor(produccion_df, 'Nombre Tipo Póliza', 'Anulacion') 
@@ -147,7 +147,7 @@ def main():
             final_df_prima_tecnica.reset_index(drop=True, inplace=True)
 
             # Display the final DataFrames
-            st.subheader("Prima")
+            st.subheader("Prima Comercial")
             st.dataframe(final_df_prima)
             st.subheader("Prima Técnica")
             st.dataframe(final_df_prima_tecnica)
